@@ -44,9 +44,7 @@ export default class PopularLinksWidget extends Component<PopularLinksWidgetAttr
 
     return (
       <div className="LinkClicks-popular">
-        <h4 className="LinkClicks-popular-title">
-          {app.translator.trans('datlechin-link-clicks.forum.popular_links_title')}
-        </h4>
+        <h4 className="LinkClicks-popular-title">{app.translator.trans('datlechin-link-clicks.forum.popular_links_title')}</h4>
         <ul className="LinkClicks-popular-list">
           {this.links.map((link) => (
             <li key={link.id}>

@@ -66,7 +66,7 @@ export default class LinkClicksAnalytics extends Component {
 
     const params: Record<string, string | number> = {
       ...this.filterParams(),
-      'sort': this.sort(),
+      sort: this.sort(),
       'page[offset]': this.pageNumber * PAGE_SIZE,
       'page[limit]': PAGE_SIZE,
     };

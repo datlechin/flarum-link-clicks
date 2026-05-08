@@ -25,6 +25,8 @@ datlechin-link-clicks:
       enabled_help: "Master switch. When off, no rewriting and no recording."
       track_internal_label: "Track links to this forum"
       track_internal_help: "Off keeps counts focused on outbound resources."
+      open_new_window_label: "Open links in a new window"
+      open_new_window_help: "Tracked links get target=\"_blank\" so the destination opens in a new tab. Off keeps the click in the same tab."
       honor_dnt_label: "Honour Do Not Track"
       honor_dnt_help: "Skip recording when the request carries DNT: 1."
       skip_guests_label: "Don't track guest visitors"

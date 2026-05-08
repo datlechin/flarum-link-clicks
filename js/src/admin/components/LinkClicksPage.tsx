@@ -66,11 +66,7 @@ export default class LinkClicksPage extends ExtensionPage {
   protected renderTabButton(tab: Tab, icon: string): Mithril.Vnode<any, any> {
     return (
       <li>
-        <button
-          type="button"
-          className={classList('LinkClicksPage-tab', { active: this.activeTab === tab })}
-          onclick={() => this.setTab(tab)}
-        >
+        <button type="button" className={classList('LinkClicksPage-tab', { active: this.activeTab === tab })} onclick={() => this.setTab(tab)}>
           <i className={icon} />
           <span>{app.translator.trans(`datlechin-link-clicks.admin.tabs.${tab}`)}</span>
         </button>
@@ -94,6 +90,12 @@ export default class LinkClicksPage extends ExtensionPage {
               type: 'boolean',
               label: app.translator.trans('datlechin-link-clicks.admin.settings.track_internal_label'),
               help: app.translator.trans('datlechin-link-clicks.admin.settings.track_internal_help'),
+            })}
+            {this.buildSettingComponent({
+              setting: 'datlechin-link-clicks.open_in_new_window',
+              type: 'boolean',
+              label: app.translator.trans('datlechin-link-clicks.admin.settings.open_new_window_label'),
+              help: app.translator.trans('datlechin-link-clicks.admin.settings.open_new_window_help'),
             })}
             {this.buildSettingComponent({
               setting: 'datlechin-link-clicks.honor_dnt',

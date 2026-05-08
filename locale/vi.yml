@@ -25,6 +25,8 @@ datlechin-link-clicks:
       enabled_help: "Công tắc tổng. Khi tắt, không rewrite link và không ghi lại click."
       track_internal_label: "Đếm cả link trỏ về diễn đàn"
       track_internal_help: "Mặc định tắt để tập trung vào link ra ngoài."
+      open_new_window_label: "Mở link trong tab mới"
+      open_new_window_help: "Link đã track sẽ thêm target=\"_blank\" để mở trong tab mới. Tắt để click ngay trong tab hiện tại."
       honor_dnt_label: "Tôn trọng Do Not Track"
       honor_dnt_help: "Bỏ qua không ghi lại khi request có header DNT: 1."
       skip_guests_label: "Không theo dõi khách"

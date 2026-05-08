@@ -11,7 +11,7 @@ app.initializers.add('datlechin-link-clicks', () => {
       permission: 'datlechin-link-clicks.viewAnalytics',
     },
     'moderate',
-    50,
+    50
   );
 
   if ('flarum-tags' in flarum.extensions) {

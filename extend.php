@@ -126,6 +126,7 @@ return [
         ->default('datlechin-link-clicks.tracking_params_strip', '')
         ->default('datlechin-link-clicks.attachment_path_prefixes', '')
         ->default('datlechin-link-clicks.skip_guests', false)
+        ->default('datlechin-link-clicks.open_in_new_window', false)
         ->default('datlechin-link-clicks.webhook_enabled', false)
         ->default('datlechin-link-clicks.webhook_url', '')
         ->default('datlechin-link-clicks.webhook_secret', '')

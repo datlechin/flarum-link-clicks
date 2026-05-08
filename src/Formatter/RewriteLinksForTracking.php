@@ -64,8 +64,9 @@ class RewriteLinksForTracking
         }
 
         $minDisplay = (int) $this->settings->get('datlechin-link-clicks.min_display_count', 1);
+        $openNewWindow = (bool) $this->settings->get('datlechin-link-clicks.open_in_new_window', false);
 
-        return Utils::replaceAttributes($xml, 'URL', function (array $attrs) use ($linksByHash, $context, $minDisplay): array {
+        return Utils::replaceAttributes($xml, 'URL', function (array $attrs) use ($linksByHash, $context, $minDisplay, $openNewWindow): array {
             $rawUrl = $attrs['url'] ?? '';
             if ($rawUrl === '') {
                 return $attrs;
@@ -92,6 +93,15 @@ class RewriteLinksForTracking
             $attrs['data-post-id'] = (string) $context->id;
             $attrs['data-url-id'] = (string) $postLink->id;
             $attrs['class'] = trim(($attrs['class'] ?? '').' LinkClicks-link');
+
+            if ($openNewWindow) {
+                // Forces the browser to open the destination in a new tab.
+                // `noopener noreferrer` keeps the new tab from reaching back
+                // into window.opener and stops the destination from seeing
+                // the source URL via Referer.
+                $attrs['target'] = '_blank';
+                $attrs['rel'] = trim(($attrs['rel'] ?? '').' noopener noreferrer');
+            }
 
             $hasCustomTitle = isset($attrs['title']) && $attrs['title'] !== '';
             if ($hasCustomTitle) {

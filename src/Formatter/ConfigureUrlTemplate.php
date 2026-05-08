@@ -33,6 +33,8 @@ class ConfigureUrlTemplate
         'data-url-id',
         'data-custom-title',
         'class',
+        'target',
+        'rel',
     ];
 
     public function __invoke(Configurator $configurator): void

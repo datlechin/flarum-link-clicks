@@ -38,9 +38,7 @@ export default function extendPostControls(): void {
         }}
       >
         {app.translator.trans(
-          disabled
-            ? 'datlechin-link-clicks.forum.post_controls.enable_tracking'
-            : 'datlechin-link-clicks.forum.post_controls.disable_tracking'
+          disabled ? 'datlechin-link-clicks.forum.post_controls.enable_tracking' : 'datlechin-link-clicks.forum.post_controls.disable_tracking'
         )}
       </Button>,
       -10

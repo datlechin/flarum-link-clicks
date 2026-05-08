@@ -105,9 +105,7 @@ export default class LinkClickersModal extends Modal<Attrs> {
           {row.user.avatarUrl ? (
             <img className="Avatar LinkClickersModal-avatar" src={row.user.avatarUrl} alt="" />
           ) : (
-            <span className="Avatar LinkClickersModal-avatar LinkClickersModal-avatarFallback">
-              {row.user.displayName.charAt(0).toUpperCase()}
-            </span>
+            <span className="Avatar LinkClickersModal-avatar LinkClickersModal-avatarFallback">{row.user.displayName.charAt(0).toUpperCase()}</span>
           )}
           <span>{row.user.displayName}</span>
         </a>
