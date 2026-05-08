@@ -63,6 +63,8 @@ class ListUserPopularLinksController implements RequestHandlerInterface
 
         $minDisplay = (int) $this->settings->get('datlechin-link-clicks.min_display_count', 1);
 
+        $col = fn (string $c) => $this->db->getQueryGrammar()->wrap($c);
+
         $rows = $this->cache->remember(
             "datlechin-link-clicks.user-popular.{$userId}.{$minDisplay}",
             self::TTL_SECONDS,
@@ -73,12 +75,12 @@ class ListUserPopularLinksController implements RequestHandlerInterface
                 ->where('post_links.is_internal', false)
                 ->where('post_links.is_attachment', false)
                 ->groupBy('post_links.url_hash')
-                ->selectRaw('post_links.url_hash,
-                             MIN(post_links.id) as id,
-                             MIN(post_links.url) as url,
-                             SUM(post_links.clicks_count) as clicks_count,
-                             MAX(post_links.last_clicked_at) as last_clicked_at')
-                ->havingRaw('SUM(post_links.clicks_count) >= ?', [$minDisplay])
+                ->selectRaw($col('post_links.url_hash').',
+                             MIN('.$col('post_links.id').') as id,
+                             MIN('.$col('post_links.url').') as url,
+                             SUM('.$col('post_links.clicks_count').') as clicks_count,
+                             MAX('.$col('post_links.last_clicked_at').') as last_clicked_at')
+                ->havingRaw('SUM('.$col('post_links.clicks_count').') >= ?', [$minDisplay])
                 ->orderByDesc('clicks_count')
                 ->orderByDesc('last_clicked_at')
                 ->limit(self::LIMIT)
