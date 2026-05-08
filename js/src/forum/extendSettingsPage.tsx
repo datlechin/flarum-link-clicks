@@ -1,15 +1,9 @@
 import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
 import Switch from 'flarum/common/components/Switch';
-import type SettingsPage from 'flarum/forum/components/SettingsPage';
-import type ItemList from 'flarum/common/utils/ItemList';
-import type Mithril from 'mithril';
 
 export default function extendSettingsPage(): void {
-  extend(
-    'flarum/forum/components/SettingsPage',
-    'privacyItems',
-    function (this: SettingsPage & Record<string, unknown>, items: ItemList<Mithril.Children>) {
+  extend('flarum/forum/components/SettingsPage', 'privacyItems', function (this: any, items: any) {
       const user = this.user;
       if (!user) return;
 
@@ -47,7 +41,6 @@ export default function extendSettingsPage(): void {
           <p className="helpText">{app.translator.trans('datlechin-link-clicks.forum.settings.opt_out_help')}</p>,
         ],
         40
-      );
-    }
-  );
+    );
+  });
 }

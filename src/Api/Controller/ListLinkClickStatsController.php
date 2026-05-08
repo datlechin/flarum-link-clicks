@@ -66,10 +66,12 @@ class ListLinkClickStatsController implements RequestHandlerInterface
             ->select($this->db->raw('COUNT(DISTINCT '.$col('post_links.url_hash').') as c'))
             ->value('c');
 
+        // Cast booleans to int before MAX() because Postgres rejects
+        // `max(boolean)`. The CAST works the same on MySQL/SQLite.
         $rows = (clone $base)
             ->selectRaw($col('post_links.url').', '.$col('post_links.url_hash').',
-                         MAX('.$col('post_links.is_internal').') as is_internal,
-                         MAX('.$col('post_links.is_attachment').') as is_attachment,
+                         MAX(CAST('.$col('post_links.is_internal').' AS INTEGER)) as is_internal,
+                         MAX(CAST('.$col('post_links.is_attachment').' AS INTEGER)) as is_attachment,
                          COUNT(*) as total_clicks,
                          COUNT(DISTINCT COALESCE(CAST('.$col('link_click_events.user_id').' AS CHAR), '.$col('link_click_events.ip_address').')) as unique_users,
                          MIN('.$col('link_click_events.clicked_at').') as first_clicked,

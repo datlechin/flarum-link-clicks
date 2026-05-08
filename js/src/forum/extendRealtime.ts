@@ -10,7 +10,8 @@ interface LinkClickCountedPayload {
 
 export default function extendRealtime(): void {
   new RealtimeExtend()
-    .onBothChannelsEvent('linkClickCounted', (data: LinkClickCountedPayload) => {
+    .onBothChannelsEvent('linkClickCounted', (raw: unknown) => {
+      const data = raw as LinkClickCountedPayload;
       const minDisplay = app.forum.attribute<number>('linkClicksMinDisplay');
       const selector = `.LinkClicks-link[data-post-id="${data.post_id}"][data-url-id="${data.url_id}"]`;
 

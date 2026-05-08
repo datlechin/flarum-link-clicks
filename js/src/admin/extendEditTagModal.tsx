@@ -4,11 +4,11 @@ import Stream from 'flarum/common/utils/Stream';
 import EditTagModal from 'ext:flarum/tags/admin/components/EditTagModal';
 
 export default function extendEditTagModal() {
-  extend(EditTagModal.prototype, 'oninit', function () {
-    this.linkClicksDisabled = Stream(this.tag.attribute<boolean>('linkClicksDisabled') ?? false);
+  extend(EditTagModal.prototype, 'oninit', function (this: any) {
+    this.linkClicksDisabled = Stream(this.tag.attribute('linkClicksDisabled') ?? false);
   });
 
-  extend(EditTagModal.prototype, 'fields', function (items) {
+  extend(EditTagModal.prototype, 'fields', function (this: any, items: any) {
     items.add(
       'linkClicksDisabled',
       <div className="Form-group">
@@ -24,7 +24,7 @@ export default function extendEditTagModal() {
     );
   });
 
-  extend(EditTagModal.prototype, 'submitData', function (data) {
+  extend(EditTagModal.prototype, 'submitData', function (this: any, data: any) {
     data.linkClicksDisabled = this.linkClicksDisabled();
   });
 }

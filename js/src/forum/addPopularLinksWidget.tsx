@@ -3,7 +3,10 @@ import DiscussionPage from 'flarum/forum/components/DiscussionPage';
 import PopularLinksWidget from './components/PopularLinksWidget';
 
 export default function addPopularLinksWidget() {
-  extend(DiscussionPage.prototype, 'sidebarItems', function (items) {
+  // `this.discussion` is protected on DiscussionPage; runtime access
+  // through the prototype extension still works, but TS rejects it
+  // through the public type. Loosen the `this` type to allow the read.
+  extend(DiscussionPage.prototype, 'sidebarItems', function (this: any, items: any) {
     if (!this.discussion) {
       return;
     }

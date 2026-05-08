@@ -19,6 +19,7 @@
       "flarum/*": ["../vendor/flarum/core/js/dist-typings/*"],
 // <CUSTOM-2>
       "ext:flarum/tags/*": ["../vendor/flarum/tags/js/dist-typings/*"],
+      "ext:flarum/realtime/*": ["../vendor/flarum/realtime/js/dist-typings/*"],
 // </CUSTOM-2>
     }
   }

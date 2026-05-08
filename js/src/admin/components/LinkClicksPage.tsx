@@ -34,7 +34,7 @@ export default class LinkClicksPage extends ExtensionPage {
     }
   }
 
-  content(): Mithril.Children {
+  content(): Mithril.Vnode<any, any> {
     return (
       <div className="LinkClicksPage">
         <div className="LinkClicksPage-tabsBar">
@@ -52,7 +52,7 @@ export default class LinkClicksPage extends ExtensionPage {
     );
   }
 
-  protected renderActiveTab(): Mithril.Children {
+  protected renderActiveTab(): Mithril.Vnode<any, any> {
     switch (this.activeTab) {
       case 'analytics':
         return this.renderAnalytics();
@@ -63,7 +63,7 @@ export default class LinkClicksPage extends ExtensionPage {
     }
   }
 
-  protected renderTabButton(tab: Tab, icon: string): Mithril.Children {
+  protected renderTabButton(tab: Tab, icon: string): Mithril.Vnode<any, any> {
     return (
       <li>
         <button
@@ -78,7 +78,7 @@ export default class LinkClicksPage extends ExtensionPage {
     );
   }
 
-  protected renderSettings(): Mithril.Children {
+  protected renderSettings(): Mithril.Vnode<any, any> {
     return (
       <div className="ExtensionPage-settings">
         <div className="container">
@@ -159,7 +159,7 @@ export default class LinkClicksPage extends ExtensionPage {
     );
   }
 
-  protected renderWebhook(): Mithril.Children {
+  protected renderWebhook(): Mithril.Vnode<any, any> {
     const v = this.setting('datlechin-link-clicks.webhook_enabled')();
     const enabled = v === true || v === 1 || v === '1';
 
@@ -195,7 +195,7 @@ export default class LinkClicksPage extends ExtensionPage {
     );
   }
 
-  protected renderAnalytics(): Mithril.Children {
+  protected renderAnalytics(): Mithril.Vnode<any, any> {
     return (
       <div className="ExtensionPage-settings">
         <div className="container">
