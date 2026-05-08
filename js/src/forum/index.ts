@@ -1,7 +1,17 @@
 import app from 'flarum/forum/app';
-
-export { default as extend } from './extend';
+import addPopularLinksWidget from './addPopularLinksWidget';
+import addUserPopularLinksWidget from './addUserPopularLinksWidget';
+import extendPostControls from './extendPostControls';
+import extendRealtime from './extendRealtime';
+import extendSettingsPage from './extendSettingsPage';
 
 app.initializers.add('datlechin-link-clicks', () => {
-  console.log('[datlechin/flarum-link-clicks] Hello, forum!');
+  addPopularLinksWidget();
+  addUserPopularLinksWidget();
+  extendSettingsPage();
+  extendPostControls();
+
+  if ('flarum-realtime' in flarum.extensions) {
+    extendRealtime();
+  }
 });

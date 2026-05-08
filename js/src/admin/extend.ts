@@ -1,8 +1,6 @@
 import Extend from 'flarum/common/extenders';
-import commonExtend from '../common/extend';
+import LinkClicksPage from './components/LinkClicksPage';
 
 export default [
-  ...commonExtend,
-
-  // Add your admin extenders here
+  new Extend.Admin().page(LinkClicksPage),
 ];

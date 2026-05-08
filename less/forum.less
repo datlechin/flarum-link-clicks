@@ -1,0 +1,85 @@
+.LinkClicks-popular {
+    margin-top: 24px;
+}
+
+@media (max-width: 767px) {
+    .DiscussionPage .LinkClicks-popular {
+        display: none;
+    }
+}
+.LinkClicks-popular-title {
+    margin: 0 0 8px 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--muted-color);
+    letter-spacing: 0.5px;
+}
+.LinkClicks-popular-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.LinkClicks-popular-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 13px;
+    transition: background 120ms;
+
+    &:hover {
+        background: var(--control-bg);
+        color: var(--link-color);
+        text-decoration: none;
+
+        .LinkClicks-popular-count {
+            background: var(--primary-color);
+            color: var(--body-bg);
+        }
+    }
+}
+.LinkClicks-popular-host {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.LinkClicks-popular-count {
+    flex-shrink: 0;
+    min-width: 24px;
+    padding: 1px 8px;
+    background: var(--control-bg);
+    color: var(--muted-color);
+    border-radius: 10px;
+    font-size: 11px;
+    line-height: 16px;
+    font-weight: 600;
+    text-align: center;
+    transition: background 120ms, color 120ms;
+}
+
+.LinkClicks-link {
+    &[data-clicks]:not([data-clicks="0"])::after {
+        // Leading space inside `content` keeps the badge from sticking to
+        // the link text when copied. `user-select: none` then drops it
+        // from the selection entirely so paste yields a clean URL.
+        content: " " attr(data-clicks);
+        display: inline-block;
+        margin-inline-start: 4px;
+        padding: 0 6px;
+        font-size: 11px;
+        line-height: 16px;
+        font-weight: 600;
+        border-radius: var(--border-radius);
+        background: var(--control-bg);
+        color: var(--control-color);
+        vertical-align: 1px;
+        user-select: none;
+        -webkit-user-select: none;
+        pointer-events: none;
+    }
+}

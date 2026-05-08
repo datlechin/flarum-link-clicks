@@ -1,24 +1,109 @@
 # Link Clicks
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/datlechin/flarum-link-clicks.svg)](https://packagist.org/packages/datlechin/flarum-link-clicks) [![Total Downloads](https://img.shields.io/packagist/dt/datlechin/flarum-link-clicks.svg)](https://packagist.org/packages/datlechin/flarum-link-clicks)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md) [![Latest Stable Version](https://img.shields.io/packagist/v/datlechin/flarum-link-clicks.svg)](https://packagist.org/packages/datlechin/flarum-link-clicks) [![Total Downloads](https://img.shields.io/packagist/dt/datlechin/flarum-link-clicks.svg)](https://packagist.org/packages/datlechin/flarum-link-clicks)
 
-A [Flarum](https://flarum.org) extension. Show a click count next to each link in a post.
+A Flarum extension that puts a click count next to every link in a post.
+
+![Badge in a post](screenshots/badge.png)
+
+## What it does
+
+Every `http(s)` link grows a small badge once people start clicking. The badge inherits your theme and dark mode automatically. The number tells everyone reading the post how many people opened that link.
+
+On top of the badge:
+
+- **Popular links** sidebar widget on each discussion.
+- **Most clicked links** widget on user profiles.
+- **Live updates** when `flarum/realtime` is installed. Badges tick up without a page reload.
+- **Admin analytics** with filters, CSV export, and a per-link drill-down that shows who clicked.
+- **Webhook** to forward click events to your own service.
+- **Privacy controls**: forum-wide skip-guests, per-user opt-out, author per-post toggle, tag-level opt-out (with `flarum/tags`), and full GDPR export / anonymize / delete (with `flarum/gdpr`).
+
+| Popular links sidebar | Most clicked links on profile |
+|---|---|
+| ![Popular links widget](screenshots/popular-widget.png) | ![Most clicked links on user profile](screenshots/user-widget.png) |
 
 ## Installation
 
-Install with composer:
-
 ```sh
-composer require datlechin/flarum-link-clicks:"*"
+composer require datlechin/flarum-link-clicks
 ```
+
+Enable from Admin → Extensions.
 
 ## Updating
 
 ```sh
-composer update datlechin/flarum-link-clicks:"*"
+composer update datlechin/flarum-link-clicks
 php flarum migrate
 php flarum cache:clear
 ```
+
+## Configuration
+
+The extension page (Admin → Extensions → Link Clicks) has three tabs.
+
+![Admin analytics tab](screenshots/admin-analytics.png)
+
+### Settings
+
+| Key | Default | What it does |
+|---|---|---|
+| `enabled` | `true` | Master switch. Off means no badges and no recording. |
+| `track_internal` | `false` | Track links pointing back at the forum. Off keeps the focus on outbound traffic. Attachments are tracked regardless. |
+| `min_display_count` | `1` | Hide the badge below this number. |
+| `honor_dnt` | `true` | Skip recording when the request carries `DNT: 1`. The redirect still works. |
+| `skip_guests` | `false` | Drop all guest clicks. Logged-in users only. |
+| `dedup_window_hours` | `24` | A given user (or guest IP) only counts once per link in this window. |
+| `event_retention_days` | `90` | Daily job removes click events older than this. Set to `0` to keep everything. |
+| `bot_user_agents` |  | Extra User-Agent fragments treated as bots. One per line. |
+| `tracking_params_strip` |  | Extra query params to strip before counting. One per line. Trailing `*` matches a prefix. Defaults already cover `utm_*`, `fbclid`, `gclid`, `mc_*`, `igshid`, `_ga` and others. |
+| `attachment_path_prefixes` |  | Extra URL path prefixes treated as attachments. One per line. `/assets/files/` is built in. |
+
+### Webhook
+
+Each recorded click is sent to your URL as a JSON POST. Toggle it on, paste a URL, optionally set a shared secret to sign the request body.
+
+```json
+{
+  "event": "click_recorded",
+  "counted": true,
+  "post_link": { "id": 123, "url": "https://example.com/page", "is_internal": false, "is_attachment": false, "post_id": 456, "discussion_id": 789, "clicks_count": 42 },
+  "actor": { "user_id": 10, "username": "alice" },
+  "ip_address": "192.168.1.1",
+  "user_agent": "Mozilla/5.0 ...",
+  "clicked_at": "2026-05-09T12:34:56Z"
+}
+```
+
+`actor` is `null` for guest clicks. `counted` is `false` when the click hit a dedup or self-click rule (the badge didn't tick up). When a secret is set, the signature is sent in `X-LinkClicks-Signature: sha256=<hex>`, computed over the raw body. Delivery is async and retried a few times on failure.
+
+![Drill-down: who clicked this link](screenshots/drilldown-modal.png)
+
+### Permissions
+
+Adds one permission: **View link click analytics**. Admins have it by default. Grant to other groups from Admin → Permissions.
+
+## Backfilling
+
+Posts created before the extension was enabled aren't tracked yet. To bring them in:
+
+```sh
+php flarum link-clicks:backfill
+```
+
+Safe to re-run. `--chunk=N` tunes batch size. `--from-id=X` resumes after a failure.
+
+## Privacy and GDPR
+
+The extension stores the IP address and User-Agent of each recorded click. Under GDPR these are personal data. As the forum operator you're responsible for:
+
+- Disclosing the collection in your privacy notice.
+- Choosing a lawful basis (legitimate interest is the usual fit for engagement analytics).
+- Setting a retention window (the daily purge handles this).
+- Honouring access and erasure requests. Install `flarum/gdpr` to expose them automatically.
+
+Defaults that lean toward privacy: bots are dropped, `DNT: 1` is honoured, authors can't inflate their own counts, the redirect URL never contains the destination.
 
 ## Links
 
