@@ -74,13 +74,13 @@ class ListLinkClickStatsController implements RequestHandlerInterface
         // SQLite, and Postgres.
         $rows = (clone $base)
             ->selectRaw($col('post_links.url').', '.$col('post_links.url_hash').',
-                         MAX(CASE WHEN '.$col('post_links.is_internal').' THEN 1 ELSE 0 END) as is_internal,
-                         MAX(CASE WHEN '.$col('post_links.is_attachment').' THEN 1 ELSE 0 END) as is_attachment,
+                         '.$col('post_links.is_internal').' as is_internal,
+                         '.$col('post_links.is_attachment').' as is_attachment,
                          COUNT(*) as total_clicks,
                          COUNT(DISTINCT COALESCE(CAST('.$col('link_click_events.user_id').' AS CHAR), '.$col('link_click_events.ip_address').')) as unique_users,
                          MIN('.$col('link_click_events.clicked_at').') as first_clicked,
                          MAX('.$col('link_click_events.clicked_at').') as last_clicked')
-            ->groupBy('post_links.url_hash', 'post_links.url')
+            ->groupBy('post_links.url_hash', 'post_links.url', 'post_links.is_internal', 'post_links.is_attachment')
             ->orderBy($sortColumn, $sortDir)
             ->limit($limit)
             ->offset($offset)
