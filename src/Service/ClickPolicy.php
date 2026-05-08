@@ -15,11 +15,6 @@ use Datlechin\LinkClicks\LinkClickEvent;
 use Datlechin\LinkClicks\ValueObject\ClickContext;
 use Flarum\Settings\SettingsRepositoryInterface;
 
-/**
- * Decides whether a click should be recorded (`shouldRecord`) and whether it
- * should increment the displayed counter (`isCounted`). Bot and DNT-respecting
- * requests are dropped at the recording gate so no row is written for them.
- */
 class ClickPolicy
 {
     public function __construct(

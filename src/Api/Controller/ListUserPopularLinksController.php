@@ -26,14 +26,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Top external links from posts a user has authored, ordered by aggregate
- * click count. Designed to back a "Most clicked links from this user"
- * widget on the user's profile.
- *
- * Internal links and attachment URLs are excluded — the value here is
- * showcasing what an author shares from the wider web, not how often their
- * own posts are linked. Disabled-tracking posts are filtered out via the
- * baseline visibility join.
+ * Internal links and attachment URLs are excluded: the widget showcases what
+ * an author shares from the wider web, not how often their own posts are
+ * linked.
  */
 class ListUserPopularLinksController implements RequestHandlerInterface
 {

@@ -16,13 +16,7 @@ use Datlechin\LinkClicks\PostLink;
 use Flarum\Gdpr\Data\Type;
 
 /**
- * Plugs `link_click_events` into the flarum-gdpr export and erasure pipeline.
- *
- * Export dumps every event row authored by the user. Anonymise drops the
- * three PII fields (user_id, ip_address, user_agent). Delete removes the
- * rows and decrements the per-link aggregate so the badge count stays in
- * sync. Only loaded when `flarum-gdpr` is enabled (gated via Conditional
- * in extend.php).
+ * Only loaded when `flarum-gdpr` is enabled (gated via Conditional in extend.php).
  */
 class LinkClicks extends Type
 {

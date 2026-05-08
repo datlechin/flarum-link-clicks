@@ -26,7 +26,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  * url_hash, with their per-actor total + first/last click timestamps.
  *
  * Aggregates across post_links because the analytics table groups by URL,
- * not by post_link_id — drilling into a row should follow that grouping.
+ * not by post_link_id, so drilling into a row should follow that grouping.
  *
  * Logged-in users are grouped by user_id; guest clicks are grouped by
  * ip_address. Anonymized rows (user_id and ip_address both null after a
