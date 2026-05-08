@@ -73,7 +73,7 @@
                 "githubActions": true,
                 "prettier": true,
                 "typescript": true,
-                "bundlewatch": true,
+                "bundlewatch": false,
                 "frontendTesting": true,
                 "backendTesting": true,
                 "phpstan": true,

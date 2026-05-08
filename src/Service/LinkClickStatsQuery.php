@@ -35,11 +35,6 @@ class LinkClickStatsQuery
      * through the connection's grammar so the result is correctly prefixed
      * AND quoted per database dialect (`"flarum_post_links"."url_hash"` on
      * SQLite/Postgres, `` `flarum_post_links`.`url_hash` `` on MySQL).
-     *
-     * Use this when you need a column inside a raw aggregate the Builder
-     * API can't express (e.g. `COUNT(DISTINCT ...)` mixed with GROUP BY
-     * aggregates in a single SELECT). Going through the grammar keeps the
-     * call site portable across the test matrix.
      */
     public function col(string $tableDotColumn): string
     {

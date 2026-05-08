@@ -54,12 +54,12 @@ class ExportLinkClickStatsController implements RequestHandlerInterface
         $col = fn (string $c) => $this->query->col($c);
 
         $rows = $this->query->baseQuery($filter)
-            ->selectRaw($col('post_links.url').', MAX(CASE WHEN '.$col('post_links.is_internal').' THEN 1 ELSE 0 END) as is_internal,
+            ->selectRaw($col('post_links.url').', '.$col('post_links.is_internal').' as is_internal,
                          COUNT(*) as total_clicks,
                          COUNT(DISTINCT COALESCE(CAST('.$col('link_click_events.user_id').' AS CHAR), '.$col('link_click_events.ip_address').')) as unique_users,
                          MIN('.$col('link_click_events.clicked_at').') as first_clicked,
                          MAX('.$col('link_click_events.clicked_at').') as last_clicked')
-            ->groupBy('post_links.url_hash', 'post_links.url')
+            ->groupBy('post_links.url_hash', 'post_links.url', 'post_links.is_internal')
             ->orderBy('total_clicks', 'desc')
             ->cursor();
 
