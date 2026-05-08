@@ -67,17 +67,19 @@ class ListLinkClickStatsController implements RequestHandlerInterface
             ->value('c');
 
         // Cast booleans to int before MAX() because Postgres rejects
-        // `max(boolean)`. The CAST works the same on MySQL/SQLite.
-        // MAX(boolean) is rejected by Postgres, and MySQL refuses
-        // CAST(... AS INTEGER) (it expects SIGNED/UNSIGNED). CASE WHEN ...
-        // THEN 1 ELSE 0 END is the portable form across MySQL/MariaDB,
-        // SQLite, and Postgres.
+        // unique_users counts logged-in users (by user_id) and guest IPs
+        // (by ip_address) separately, then sums. Avoids the int->string
+        // cast that doesn't agree across MySQL (CHAR), Postgres (CHAR(1)
+        // blank-pad), and SQLite, and the COALESCE-with-sentinel that
+        // Postgres reads as a column reference. Anonymized rows (both
+        // null) drop out of the count, which is the right behaviour: we
+        // don't know how many distinct actors they were.
         $rows = (clone $base)
             ->selectRaw($col('post_links.url').', '.$col('post_links.url_hash').',
                          '.$col('post_links.is_internal').' as is_internal,
                          '.$col('post_links.is_attachment').' as is_attachment,
                          COUNT(*) as total_clicks,
-                         COUNT(DISTINCT COALESCE(CAST('.$col('link_click_events.user_id').' AS CHAR), '.$col('link_click_events.ip_address').')) as unique_users,
+                         (COUNT(DISTINCT '.$col('link_click_events.user_id').') + COUNT(DISTINCT CASE WHEN '.$col('link_click_events.user_id').' IS NULL THEN '.$col('link_click_events.ip_address').' END)) as unique_users,
                          MIN('.$col('link_click_events.clicked_at').') as first_clicked,
                          MAX('.$col('link_click_events.clicked_at').') as last_clicked')
             ->groupBy('post_links.url_hash', 'post_links.url', 'post_links.is_internal', 'post_links.is_attachment')

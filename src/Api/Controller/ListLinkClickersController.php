@@ -71,9 +71,18 @@ class ListLinkClickersController implements RequestHandlerInterface
             ->whereIn('post_link_id', $linkIds)
             ->where('counted', true);
 
-        $totalGroups = (clone $base)
-            ->selectRaw('COUNT(DISTINCT COALESCE(CAST(user_id AS CHAR), ip_address, "__anon__")) as c')
-            ->value('c');
+        // Count distinct (user_id, ip_address) groups portably by wrapping
+        // the GROUP BY query in a subquery and counting rows. Avoids the
+        // dialect-specific CAST(int AS CHAR) and Postgres's identifier
+        // reading of double-quoted strings.
+        $totalGroups = $this->db->query()
+            ->fromSub(
+                (clone $base)
+                    ->select($this->db->raw('1'))
+                    ->groupBy('user_id', 'ip_address'),
+                'g'
+            )
+            ->count();
 
         $rows = (clone $base)
             ->selectRaw('user_id, ip_address,
