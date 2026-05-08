@@ -31,6 +31,16 @@ class LinkClickStatsQuery
     }
 
     /**
+     * Configured table prefix, exposed so callers building raw selectRaw
+     * expressions can inject it manually (Laravel's grammar only auto-
+     * prefixes columns referenced through the Builder API, not raw SQL).
+     */
+    public function prefix(): string
+    {
+        return $this->db->getTablePrefix();
+    }
+
+    /**
      * @param array<string, mixed> $raw
      * @return array{since?: Carbon, until?: Carbon, is_internal?: bool, is_attachment?: bool, tag?: string}
      *

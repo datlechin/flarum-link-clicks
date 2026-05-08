@@ -57,18 +57,26 @@ class ListLinkClickStatsController implements RequestHandlerInterface
 
         $base = $this->query->baseQuery($filter);
 
+        // Raw expressions don't pass through Laravel's column-wrapping
+        // grammar, so a configured table prefix doesn't get applied. Inject
+        // it manually via getTablePrefix() and reference the fully qualified
+        // table name everywhere a raw aggregate appears.
+        $prefix = $this->db->getTablePrefix();
+        $pl = $prefix.'post_links';
+        $lce = $prefix.'link_click_events';
+
         $total = (clone $base)
-            ->select($this->db->raw('COUNT(DISTINCT post_links.url_hash) as c'))
+            ->select($this->db->raw("COUNT(DISTINCT {$pl}.url_hash) as c"))
             ->value('c');
 
         $rows = (clone $base)
-            ->selectRaw('post_links.url, post_links.url_hash,
-                         MAX(post_links.is_internal) as is_internal,
-                         MAX(post_links.is_attachment) as is_attachment,
+            ->selectRaw("{$pl}.url, {$pl}.url_hash,
+                         MAX({$pl}.is_internal) as is_internal,
+                         MAX({$pl}.is_attachment) as is_attachment,
                          COUNT(*) as total_clicks,
-                         COUNT(DISTINCT COALESCE(CAST(link_click_events.user_id AS CHAR), link_click_events.ip_address)) as unique_users,
-                         MIN(link_click_events.clicked_at) as first_clicked,
-                         MAX(link_click_events.clicked_at) as last_clicked')
+                         COUNT(DISTINCT COALESCE(CAST({$lce}.user_id AS CHAR), {$lce}.ip_address)) as unique_users,
+                         MIN({$lce}.clicked_at) as first_clicked,
+                         MAX({$lce}.clicked_at) as last_clicked")
             ->groupBy('post_links.url_hash', 'post_links.url')
             ->orderBy($sortColumn, $sortDir)
             ->limit($limit)
