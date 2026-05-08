@@ -105,8 +105,12 @@ The extension stores the IP address and User-Agent of each recorded click. Under
 
 Defaults that lean toward privacy: bots are dropped, `DNT: 1` is honoured, authors can't inflate their own counts, the redirect URL never contains the destination.
 
+## Sponsors
+
+If this extension is useful to you, [sponsoring on GitHub](https://github.com/sponsors/datlechin) helps me keep building and maintaining open source for Flarum.
+
 ## Links
 
 - [Packagist](https://packagist.org/packages/datlechin/flarum-link-clicks)
 - [GitHub](https://github.com/datlechin/flarum-link-clicks)
-- [Discuss](https://discuss.flarum.org/d/PUT_DISCUSS_SLUG_HERE)
+- [Discuss](https://discuss.flarum.org/d/39223)

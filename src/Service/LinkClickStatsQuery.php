@@ -77,26 +77,31 @@ class LinkClickStatsQuery
      */
     public function baseQuery(array $filter): Builder
     {
-        $query = $this->db->table('post_links as pl')
-            ->join('link_click_events as lce', 'lce.post_link_id', '=', 'pl.id')
-            ->join('posts as p', 'p.id', '=', 'pl.post_id')
-            ->where('lce.counted', true)
-            ->where('p.link_clicks_disabled', false);
+        // Avoid SQL aliases (`post_links as pl`) here so the table-prefix
+        // path in Laravel's query grammar stays simple. SQLite + prefix is
+        // particularly strict; raw column references like `pl.url_hash` in
+        // a select expression don't resolve when the FROM rewrite happens
+        // through a prefixed-and-aliased table.
+        $query = $this->db->table('post_links')
+            ->join('link_click_events', 'link_click_events.post_link_id', '=', 'post_links.id')
+            ->join('posts', 'posts.id', '=', 'post_links.post_id')
+            ->where('link_click_events.counted', true)
+            ->where('posts.link_clicks_disabled', false);
 
         if (isset($filter['since'])) {
-            $query->where('lce.clicked_at', '>=', $filter['since']);
+            $query->where('link_click_events.clicked_at', '>=', $filter['since']);
         }
         if (isset($filter['until'])) {
-            $query->where('lce.clicked_at', '<=', $filter['until']);
+            $query->where('link_click_events.clicked_at', '<=', $filter['until']);
         }
         if (isset($filter['is_internal'])) {
-            $query->where('pl.is_internal', $filter['is_internal']);
+            $query->where('post_links.is_internal', $filter['is_internal']);
         }
         if (isset($filter['is_attachment'])) {
-            $query->where('pl.is_attachment', $filter['is_attachment']);
+            $query->where('post_links.is_attachment', $filter['is_attachment']);
         }
         if (isset($filter['tag'])) {
-            $query->whereIn('pl.discussion_id', function (Builder $q) use ($filter) {
+            $query->whereIn('post_links.discussion_id', function (Builder $q) use ($filter) {
                 $q->select('discussion_id')
                     ->from('discussion_tag')
                     ->join('tags', 'tags.id', '=', 'discussion_tag.tag_id')
