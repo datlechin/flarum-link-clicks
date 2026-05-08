@@ -4,11 +4,11 @@ type Tab = 'settings' | 'analytics' | 'webhook';
 export default class LinkClicksPage extends ExtensionPage {
     protected activeTab: Tab;
     protected setTab(tab: Tab): void;
-    content(): Mithril.Children;
-    protected renderActiveTab(): Mithril.Children;
-    protected renderTabButton(tab: Tab, icon: string): Mithril.Children;
-    protected renderSettings(): Mithril.Children;
-    protected renderWebhook(): Mithril.Children;
-    protected renderAnalytics(): Mithril.Children;
+    content(): Mithril.Vnode<any, any>;
+    protected renderActiveTab(): Mithril.Vnode<any, any>;
+    protected renderTabButton(tab: Tab, icon: string): Mithril.Vnode<any, any>;
+    protected renderSettings(): Mithril.Vnode<any, any>;
+    protected renderWebhook(): Mithril.Vnode<any, any>;
+    protected renderAnalytics(): Mithril.Vnode<any, any>;
 }
 export {};
