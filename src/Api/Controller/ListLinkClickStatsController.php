@@ -58,25 +58,22 @@ class ListLinkClickStatsController implements RequestHandlerInterface
         $base = $this->query->baseQuery($filter);
 
         // Raw expressions don't pass through Laravel's column-wrapping
-        // grammar, so a configured table prefix doesn't get applied. Inject
-        // it manually via getTablePrefix() and reference the fully qualified
-        // table name everywhere a raw aggregate appears.
-        $prefix = $this->db->getTablePrefix();
-        $pl = $prefix.'post_links';
-        $lce = $prefix.'link_click_events';
+        // grammar. Use the helper to get fully-qualified, prefixed, and
+        // quoted column refs that work on every supported database.
+        $col = fn (string $c) => $this->query->col($c);
 
         $total = (clone $base)
-            ->select($this->db->raw("COUNT(DISTINCT {$pl}.url_hash) as c"))
+            ->select($this->db->raw('COUNT(DISTINCT '.$col('post_links.url_hash').') as c'))
             ->value('c');
 
         $rows = (clone $base)
-            ->selectRaw("{$pl}.url, {$pl}.url_hash,
-                         MAX({$pl}.is_internal) as is_internal,
-                         MAX({$pl}.is_attachment) as is_attachment,
+            ->selectRaw($col('post_links.url').', '.$col('post_links.url_hash').',
+                         MAX('.$col('post_links.is_internal').') as is_internal,
+                         MAX('.$col('post_links.is_attachment').') as is_attachment,
                          COUNT(*) as total_clicks,
-                         COUNT(DISTINCT COALESCE(CAST({$lce}.user_id AS CHAR), {$lce}.ip_address)) as unique_users,
-                         MIN({$lce}.clicked_at) as first_clicked,
-                         MAX({$lce}.clicked_at) as last_clicked")
+                         COUNT(DISTINCT COALESCE(CAST('.$col('link_click_events.user_id').' AS CHAR), '.$col('link_click_events.ip_address').')) as unique_users,
+                         MIN('.$col('link_click_events.clicked_at').') as first_clicked,
+                         MAX('.$col('link_click_events.clicked_at').') as last_clicked')
             ->groupBy('post_links.url_hash', 'post_links.url')
             ->orderBy($sortColumn, $sortDir)
             ->limit($limit)
