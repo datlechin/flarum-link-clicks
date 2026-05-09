@@ -12,13 +12,17 @@
 namespace Datlechin\LinkClicks;
 
 use Datlechin\LinkClicks\Api\Controller\ExportLinkClickStatsController;
+use Datlechin\LinkClicks\Api\Controller\LinkClickHeatmapController;
+use Datlechin\LinkClicks\Api\Controller\ListLinkClickDomainsController;
 use Datlechin\LinkClicks\Api\Controller\ListLinkClickersController;
 use Datlechin\LinkClicks\Api\Controller\ListLinkClickStatsController;
 use Datlechin\LinkClicks\Api\Controller\ListPopularLinksController;
+use Datlechin\LinkClicks\Api\Controller\ListUserClickTrailController;
 use Datlechin\LinkClicks\Api\Controller\ListUserPopularLinksController;
 use Datlechin\LinkClicks\Api\Controller\TestWebhookController;
 use Datlechin\LinkClicks\Console\BackfillCommand;
 use Datlechin\LinkClicks\Console\DailySchedule;
+use Datlechin\LinkClicks\Console\DetectAnomaliesCommand;
 use Datlechin\LinkClicks\Console\PurgeEventsCommand;
 use Datlechin\LinkClicks\Console\ReconcileCountsCommand;
 use Datlechin\LinkClicks\Event\ClickCounted;
@@ -92,7 +96,10 @@ return [
     (new Extend\Routes('api'))
         ->get('/discussions/{id}/popular-links', 'datlechin-link-clicks.popular', ListPopularLinksController::class)
         ->get('/users/{id}/popular-links', 'datlechin-link-clicks.user-popular', ListUserPopularLinksController::class)
+        ->get('/users/{id}/click-trail', 'datlechin-link-clicks.user-trail', ListUserClickTrailController::class)
         ->get('/link-click-stats', 'datlechin-link-clicks.stats', ListLinkClickStatsController::class)
+        ->get('/link-click-stats/domains', 'datlechin-link-clicks.stats.domains', ListLinkClickDomainsController::class)
+        ->get('/link-click-stats/heatmap', 'datlechin-link-clicks.stats.heatmap', LinkClickHeatmapController::class)
         ->get('/link-click-stats/export', 'datlechin-link-clicks.stats.export', ExportLinkClickStatsController::class)
         ->get('/link-click-stats/{id}/clickers', 'datlechin-link-clicks.stats.clickers', ListLinkClickersController::class)
         ->post('/link-click-stats/webhook/test', 'datlechin-link-clicks.webhook.test', TestWebhookController::class),
@@ -117,8 +124,10 @@ return [
         ->command(BackfillCommand::class)
         ->command(PurgeEventsCommand::class)
         ->command(ReconcileCountsCommand::class)
+        ->command(DetectAnomaliesCommand::class)
         ->schedule(PurgeEventsCommand::class, DailySchedule::class)
-        ->schedule(ReconcileCountsCommand::class, DailySchedule::class),
+        ->schedule(ReconcileCountsCommand::class, DailySchedule::class)
+        ->schedule(DetectAnomaliesCommand::class, DailySchedule::class),
 
     (new Extend\Settings())
         ->default('datlechin-link-clicks.enabled', true)
@@ -135,6 +144,8 @@ return [
         ->default('datlechin-link-clicks.webhook_enabled', false)
         ->default('datlechin-link-clicks.webhook_url', '')
         ->default('datlechin-link-clicks.webhook_secret', '')
+        ->default('datlechin-link-clicks.anomaly_threshold_ratio', 10)
+        ->default('datlechin-link-clicks.anomaly_min_clicks', 20)
         ->serializeToForum('linkClicksMinDisplay', 'datlechin-link-clicks.min_display_count', 'intval'),
 
     (new Extend\User())

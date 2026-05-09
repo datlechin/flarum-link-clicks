@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string      $url_hash
  * @property bool        $is_internal
  * @property bool        $is_attachment
+ * @property string|null $domain
  * @property int         $clicks_count
  * @property Carbon      $first_seen_at
  * @property Carbon|null $last_clicked_at

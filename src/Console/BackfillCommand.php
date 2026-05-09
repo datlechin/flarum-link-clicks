@@ -74,11 +74,19 @@ class BackfillCommand extends Command
                                 'discussion_id' => $post->discussion_id,
                                 'url' => $normalized->value,
                                 'is_internal' => $isInternal,
+                                'is_attachment' => $normalized->isAttachment,
+                                'domain' => $normalized->host,
                                 'first_seen_at' => $now,
                             ],
                         );
                         if ($created->wasRecentlyCreated) {
                             $totalRows++;
+                        } elseif ($created->domain !== $normalized->host) {
+                            // Existing rows from before the domain column may
+                            // have NULL; backfill it on encounter so the new
+                            // grouping works without a separate migration.
+                            $created->domain = $normalized->host;
+                            $created->save();
                         }
                     } catch (QueryException $e) {
                         if ($e->getCode() !== '23000') {

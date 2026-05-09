@@ -118,6 +118,7 @@ class SyncPostLinks
                         'url' => $normalized->value,
                         'is_internal' => $isInternal,
                         'is_attachment' => $normalized->isAttachment,
+                        'domain' => $normalized->host,
                         'first_seen_at' => $now,
                     ],
                 );
