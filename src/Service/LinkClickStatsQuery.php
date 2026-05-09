@@ -43,7 +43,7 @@ class LinkClickStatsQuery
 
     /**
      * @param array<string, mixed> $raw
-     * @return array{since?: Carbon, until?: Carbon, is_internal?: bool, is_attachment?: bool, tag?: string}
+     * @return array{since?: Carbon, until?: Carbon, is_internal?: bool, is_attachment?: bool, tag?: string, discussion_id?: int}
      *
      * @throws \InvalidArgumentException on malformed input (controller maps to 422)
      */
@@ -80,11 +80,19 @@ class LinkClickStatsQuery
             $out['tag'] = (string) $raw['tag'];
         }
 
+        if (isset($raw['discussion_id'])) {
+            $id = filter_var($raw['discussion_id'], FILTER_VALIDATE_INT);
+            if ($id === false || $id <= 0) {
+                throw new \InvalidArgumentException('filter[discussion_id] must be a positive integer.');
+            }
+            $out['discussion_id'] = $id;
+        }
+
         return $out;
     }
 
     /**
-     * @param array{since?: Carbon, until?: Carbon, is_internal?: bool, is_attachment?: bool, tag?: string} $filter
+     * @param array{since?: Carbon, until?: Carbon, is_internal?: bool, is_attachment?: bool, tag?: string, discussion_id?: int} $filter
      */
     public function baseQuery(array $filter): Builder
     {
@@ -118,6 +126,9 @@ class LinkClickStatsQuery
                     ->join('tags', 'tags.id', '=', 'discussion_tag.tag_id')
                     ->where('tags.slug', $filter['tag']);
             });
+        }
+        if (isset($filter['discussion_id'])) {
+            $query->where('post_links.discussion_id', $filter['discussion_id']);
         }
 
         return $query;

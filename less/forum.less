@@ -83,3 +83,54 @@
         pointer-events: none;
     }
 }
+
+.DiscussionClickStatsModal {
+    &-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+
+        th, td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--control-bg);
+            vertical-align: middle;
+        }
+
+        th {
+            text-align: left;
+            color: var(--muted-color);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+    }
+
+    &-num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &-urlCell {
+        max-width: 0;
+
+        a {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    &-empty {
+        padding: 32px 16px;
+        text-align: center;
+        color: var(--muted-color);
+    }
+
+    &-emptyIcon {
+        font-size: 32px;
+        margin-bottom: 12px;
+        opacity: 0.5;
+    }
+}

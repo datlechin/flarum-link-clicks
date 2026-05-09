@@ -34,6 +34,7 @@ class ClickRecorder
         protected ClickPolicy $policy,
         protected ConnectionInterface $db,
         protected Dispatcher $events,
+        protected UserAgentClassifier $ua,
     ) {
     }
 
@@ -67,11 +68,15 @@ class ClickRecorder
 
             $isGuest = $ctx->actor->isGuest();
 
+            $hasUa = $ctx->userAgentRaw !== '';
+
             LinkClickEvent::query()->create([
                 'post_link_id' => $ctx->postLink->id,
                 'user_id' => $isGuest ? null : $ctx->actor->id,
                 'ip_address' => $ctx->ipAddress !== '' ? $ctx->ipAddress : null,
-                'user_agent' => $ctx->userAgentRaw !== '' ? $ctx->userAgentRaw : null,
+                'user_agent' => $hasUa ? $ctx->userAgentRaw : null,
+                'device_class' => $hasUa ? $this->ua->classifyDevice($ctx->userAgentRaw) : null,
+                'browser_family' => $hasUa ? $this->ua->classifyBrowser($ctx->userAgentRaw) : null,
                 'counted' => $shouldCount,
                 'clicked_at' => $ctx->now,
             ]);

@@ -13,6 +13,15 @@ datlechin-link-clicks:
       disable_tracking: "Tắt theo dõi click cho bài này"
       enable_tracking: "Bật theo dõi click cho bài này"
       toggle_failed: "Không thể cập nhật trạng thái theo dõi click cho bài này."
+    discussion_controls:
+      click_stats: "Thống kê click"
+    discussion_stats:
+      title: "Thống kê click: {title}"
+      column_url: "Link"
+      column_total: "Click"
+      column_unique: "Số người"
+      column_last: "Click gần nhất"
+      empty: "Chưa có click nào cho link trong thảo luận này."
 
   admin:
     tabs:
@@ -105,6 +114,22 @@ datlechin-link-clicks:
       title: "Top domain (30 ngày gần nhất)"
       column_domain: "Domain"
       column_urls: "Số URL"
+    devices:
+      title: "Click đến từ đâu (30 ngày gần nhất)"
+      devices_label: "Theo thiết bị"
+      browsers_label: "Theo trình duyệt"
+      devices:
+        mobile: "Mobile"
+        tablet: "Máy tính bảng"
+        desktop: "Máy tính"
+      browsers:
+        chrome: "Chrome"
+        firefox: "Firefox"
+        safari: "Safari"
+        edge: "Edge"
+        opera: "Opera"
+        samsung: "Samsung Internet"
+        other: "Khác"
     heatmap:
       title: "Bản đồ nhiệt click (30 ngày)"
       lead: "Mỗi ô là 1 giờ trong 1 ngày trong tuần. Đậm = nhiều click."

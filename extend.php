@@ -12,6 +12,7 @@
 namespace Datlechin\LinkClicks;
 
 use Datlechin\LinkClicks\Api\Controller\ExportLinkClickStatsController;
+use Datlechin\LinkClicks\Api\Controller\LinkClickDeviceBreakdownController;
 use Datlechin\LinkClicks\Api\Controller\LinkClickHeatmapController;
 use Datlechin\LinkClicks\Api\Controller\LinkClickTimeSeriesController;
 use Datlechin\LinkClicks\Api\Controller\ListLinkClickDomainsController;
@@ -22,6 +23,7 @@ use Datlechin\LinkClicks\Api\Controller\ListUserClickTrailController;
 use Datlechin\LinkClicks\Api\Controller\ListUserPopularLinksController;
 use Datlechin\LinkClicks\Api\Controller\TestWebhookController;
 use Datlechin\LinkClicks\Console\BackfillCommand;
+use Datlechin\LinkClicks\Console\BuildDailyRollupCommand;
 use Datlechin\LinkClicks\Console\DailySchedule;
 use Datlechin\LinkClicks\Console\DetectAnomaliesCommand;
 use Datlechin\LinkClicks\Console\PurgeEventsCommand;
@@ -104,6 +106,7 @@ return [
         ->get('/link-click-stats/domains', 'datlechin-link-clicks.stats.domains', ListLinkClickDomainsController::class)
         ->get('/link-click-stats/heatmap', 'datlechin-link-clicks.stats.heatmap', LinkClickHeatmapController::class)
         ->get('/link-click-stats/timeseries', 'datlechin-link-clicks.stats.timeseries', LinkClickTimeSeriesController::class)
+        ->get('/link-click-stats/devices', 'datlechin-link-clicks.stats.devices', LinkClickDeviceBreakdownController::class)
         ->get('/link-click-stats/export', 'datlechin-link-clicks.stats.export', ExportLinkClickStatsController::class)
         ->get('/link-click-stats/{id}/clickers', 'datlechin-link-clicks.stats.clickers', ListLinkClickersController::class)
         ->post('/link-click-stats/webhook/test', 'datlechin-link-clicks.webhook.test', TestWebhookController::class),
@@ -124,14 +127,22 @@ return [
                 ->save(fn (Post $post) => resolve(SyncPostLinks::class)->sync($post, deleteOrphans: false)),
         ]),
 
+    (new Extend\ApiResource(Resource\ForumResource::class))
+        ->fields(fn () => [
+            Schema\Boolean::make('canViewLinkClickAnalytics')
+                ->get(fn ($_, Context $context) => $context->getActor()->hasPermission('datlechin-link-clicks.viewAnalytics')),
+        ]),
+
     (new Extend\Console())
         ->command(BackfillCommand::class)
+        ->command(BuildDailyRollupCommand::class)
         ->command(PurgeEventsCommand::class)
         ->command(ReconcileCountsCommand::class)
         ->command(DetectAnomaliesCommand::class)
         ->command(SendDigestCommand::class)
         ->schedule(PurgeEventsCommand::class, DailySchedule::class)
         ->schedule(ReconcileCountsCommand::class, DailySchedule::class)
+        ->schedule(BuildDailyRollupCommand::class, DailySchedule::class)
         ->schedule(DetectAnomaliesCommand::class, DailySchedule::class)
         ->schedule(SendDigestCommand::class, WeeklySchedule::class),
 

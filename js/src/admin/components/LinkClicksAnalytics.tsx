@@ -8,6 +8,7 @@ import extractText from 'flarum/common/utils/extractText';
 import dayjs from 'dayjs';
 import type Mithril from 'mithril';
 import LinkClickersModal from './LinkClickersModal';
+import LinkClicksDeviceBreakdown from './LinkClicksDeviceBreakdown';
 import LinkClicksDomains from './LinkClicksDomains';
 import LinkClicksHeatmap from './LinkClicksHeatmap';
 import LinkClicksTimeSeries from './LinkClicksTimeSeries';
@@ -288,6 +289,7 @@ export default class LinkClicksAnalytics extends Component {
 
         <LinkClicksTimeSeries />
         <LinkClicksDomains />
+        <LinkClicksDeviceBreakdown />
         <LinkClicksHeatmap />
       </div>
     );

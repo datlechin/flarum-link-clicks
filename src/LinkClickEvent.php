@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null    $user_id
  * @property string|null $ip_address
  * @property string|null $user_agent
+ * @property string|null $device_class
+ * @property string|null $browser_family
  * @property bool        $counted
  * @property Carbon      $clicked_at
  * @property-read PostLink $postLink

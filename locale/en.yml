@@ -13,6 +13,15 @@ datlechin-link-clicks:
       disable_tracking: "Don't count clicks on this post"
       enable_tracking: "Count clicks on this post"
       toggle_failed: "Couldn't update click tracking for this post."
+    discussion_controls:
+      click_stats: "Click stats"
+    discussion_stats:
+      title: "Click stats: {title}"
+      column_url: "Link"
+      column_total: "Clicks"
+      column_unique: "People"
+      column_last: "Last click"
+      empty: "No clicks recorded for any link in this discussion yet."
 
   admin:
     tabs:
@@ -105,6 +114,22 @@ datlechin-link-clicks:
       title: "Top domains (last 30 days)"
       column_domain: "Domain"
       column_urls: "URLs"
+    devices:
+      title: "Where clicks come from (last 30 days)"
+      devices_label: "By device"
+      browsers_label: "By browser"
+      devices:
+        mobile: "Mobile"
+        tablet: "Tablet"
+        desktop: "Desktop"
+      browsers:
+        chrome: "Chrome"
+        firefox: "Firefox"
+        safari: "Safari"
+        edge: "Edge"
+        opera: "Opera"
+        samsung: "Samsung Internet"
+        other: "Other"
     heatmap:
       title: "Click heatmap (last 30 days)"
       lead: "Each cell is one hour of one day. Darker = busier."

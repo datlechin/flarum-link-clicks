@@ -63,6 +63,78 @@ class UserAgentClassifier
     }
 
     /**
+     * Coarse-grained device class for analytics breakdowns.
+     *
+     * Tablets are checked before mobiles because tablet UA strings — iPad,
+     * Android tablets without "Mobile" — are often supersets of mobile
+     * markers and would otherwise misclassify.
+     */
+    public function classifyDevice(string $rawUa): string
+    {
+        if ($rawUa === '') {
+            return 'desktop';
+        }
+
+        $lower = strtolower($rawUa);
+
+        if (
+            str_contains($lower, 'ipad')
+            || str_contains($lower, 'tablet')
+            || (str_contains($lower, 'android') && ! str_contains($lower, 'mobile'))
+        ) {
+            return 'tablet';
+        }
+
+        if (
+            str_contains($lower, 'iphone')
+            || str_contains($lower, 'ipod')
+            || str_contains($lower, 'android')
+            || str_contains($lower, 'mobile')
+            || str_contains($lower, 'phone')
+        ) {
+            return 'mobile';
+        }
+
+        return 'desktop';
+    }
+
+    /**
+     * Browser family without the "is this a bot" axis. The classify() method
+     * mixes bot detection in for the click policy gate; this one is purely
+     * for analytics aggregation, so a bot UA with "chrome" still returns
+     * 'chrome' — bot rows are filtered upstream and never reach the column.
+     */
+    public function classifyBrowser(string $rawUa): string
+    {
+        if ($rawUa === '') {
+            return 'other';
+        }
+
+        $lower = strtolower($rawUa);
+
+        if (str_contains($lower, 'edg/') || str_contains($lower, 'edge/')) {
+            return 'edge';
+        }
+        if (str_contains($lower, 'opr/') || str_contains($lower, ' opera')) {
+            return 'opera';
+        }
+        if (str_contains($lower, 'samsungbrowser')) {
+            return 'samsung';
+        }
+        if (str_contains($lower, 'firefox') || str_contains($lower, 'fxios')) {
+            return 'firefox';
+        }
+        if (str_contains($lower, 'crios') || str_contains($lower, 'chrome')) {
+            return 'chrome';
+        }
+        if (str_contains($lower, 'safari')) {
+            return 'safari';
+        }
+
+        return 'other';
+    }
+
+    /**
      * @return list<string>
      */
     private function botFragments(): array

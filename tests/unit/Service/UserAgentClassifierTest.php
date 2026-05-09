@@ -81,4 +81,48 @@ class UserAgentClassifierTest extends TestCase
         // Some scrapers spoof a chrome UA but include "bot" in the product token.
         $this->assertSame('bot', $this->classifier->classify('Mozilla/5.0 ChromeBot/2.0'));
     }
+
+    #[Test]
+    #[DataProvider('deviceCases')]
+    public function it_classifies_device_class(string $rawUa, string $expected): void
+    {
+        $this->assertSame($expected, $this->classifier->classifyDevice($rawUa));
+    }
+
+    public static function deviceCases(): array
+    {
+        return [
+            'empty defaults to desktop' => ['', 'desktop'],
+            'iphone is mobile' => ['Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 Safari/604.1', 'mobile'],
+            'android phone is mobile' => ['Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36', 'mobile'],
+            'ipad is tablet' => ['Mozilla/5.0 (iPad; CPU OS 17_2 like Mac OS X) AppleWebKit/605.1.15 Safari/604.1', 'tablet'],
+            'android tablet is tablet (no Mobile token)' => ['Mozilla/5.0 (Linux; Android 13; SM-X800) AppleWebKit/537.36 Chrome/120 Safari/537.36', 'tablet'],
+            'desktop chrome' => ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120.0.6099.71 Safari/537.36', 'desktop'],
+            'windows firefox' => ['Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0', 'desktop'],
+            'unknown ua defaults to desktop' => ['SomeBox/1.0', 'desktop'],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('browserCases')]
+    public function it_classifies_browser_family(string $rawUa, string $expected): void
+    {
+        $this->assertSame($expected, $this->classifier->classifyBrowser($rawUa));
+    }
+
+    public static function browserCases(): array
+    {
+        return [
+            'empty is other' => ['', 'other'],
+            'edge wins over chrome+safari mention' => ['Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36 Edg/120.0', 'edge'],
+            'opera' => ['Mozilla/5.0 (Macintosh) AppleWebKit/537.36 Chrome/120 Safari/537.36 OPR/106.0', 'opera'],
+            'samsung internet' => ['Mozilla/5.0 (Linux; Android 13) SamsungBrowser/24.0 Chrome/115 Mobile Safari/537.36', 'samsung'],
+            'firefox desktop' => ['Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0', 'firefox'],
+            'firefox ios (FxiOS)' => ['Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 FxiOS/121.0', 'firefox'],
+            'chrome ios (CriOS)' => ['Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 CriOS/120.0', 'chrome'],
+            'chrome desktop' => ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120 Safari/537.36', 'chrome'],
+            'safari real' => ['Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 Safari/604.1', 'safari'],
+            'unknown' => ['SomeBox/1.0', 'other'],
+        ];
+    }
 }
