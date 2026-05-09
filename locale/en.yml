@@ -51,6 +51,9 @@ datlechin-link-clicks:
       webhook_url_help: "Where to send the JSON payload."
       webhook_secret_label: "Webhook secret"
       webhook_secret_help: "When set, the request body is signed with HMAC-SHA256 and the signature is sent in the X-LinkClicks-Signature header in the form sha256=HEX_DIGEST. Receivers verify by recomputing with the same secret."
+      webhook_test_button: "Send test ping"
+      webhook_test_ok: "Webhook responded with HTTP {status}."
+      webhook_test_failed: "Webhook test failed: {detail}"
     tags:
       disable_tracking_label: "Disable link click tracking in this tag"
       disable_tracking_help: "Posts in any discussion tagged with this won't have their links tracked. Existing counts are kept."

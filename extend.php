@@ -16,6 +16,7 @@ use Datlechin\LinkClicks\Api\Controller\ListLinkClickersController;
 use Datlechin\LinkClicks\Api\Controller\ListLinkClickStatsController;
 use Datlechin\LinkClicks\Api\Controller\ListPopularLinksController;
 use Datlechin\LinkClicks\Api\Controller\ListUserPopularLinksController;
+use Datlechin\LinkClicks\Api\Controller\TestWebhookController;
 use Datlechin\LinkClicks\Console\BackfillCommand;
 use Datlechin\LinkClicks\Console\DailySchedule;
 use Datlechin\LinkClicks\Console\PurgeEventsCommand;
@@ -93,7 +94,8 @@ return [
         ->get('/users/{id}/popular-links', 'datlechin-link-clicks.user-popular', ListUserPopularLinksController::class)
         ->get('/link-click-stats', 'datlechin-link-clicks.stats', ListLinkClickStatsController::class)
         ->get('/link-click-stats/export', 'datlechin-link-clicks.stats.export', ExportLinkClickStatsController::class)
-        ->get('/link-click-stats/{id}/clickers', 'datlechin-link-clicks.stats.clickers', ListLinkClickersController::class),
+        ->get('/link-click-stats/{id}/clickers', 'datlechin-link-clicks.stats.clickers', ListLinkClickersController::class)
+        ->post('/link-click-stats/webhook/test', 'datlechin-link-clicks.webhook.test', TestWebhookController::class),
 
     (new Extend\ApiResource(Resource\PostResource::class))
         ->endpoint(

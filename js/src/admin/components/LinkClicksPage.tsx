@@ -1,6 +1,7 @@
 import app from 'flarum/admin/app';
 import ExtensionPage from 'flarum/admin/components/ExtensionPage';
 import Form from 'flarum/common/components/Form';
+import Button from 'flarum/common/components/Button';
 import classList from 'flarum/common/utils/classList';
 import LinkClicksAnalytics from './LinkClicksAnalytics';
 import type Mithril from 'mithril';
@@ -190,11 +191,51 @@ export default class LinkClicksPage extends ExtensionPage {
                 help: app.translator.trans('datlechin-link-clicks.admin.settings.webhook_secret_help'),
               }),
             ]}
-            <div className="Form-group Form-controls">{this.submitButton()}</div>
+            <div className="Form-group Form-controls">
+              {this.submitButton()}
+              {enabled && (
+                <Button
+                  className="Button"
+                  icon="fas fa-paper-plane"
+                  loading={(this as any).webhookTestLoading as boolean | undefined}
+                  onclick={() => this.sendTestPing()}
+                >
+                  {app.translator.trans('datlechin-link-clicks.admin.settings.webhook_test_button')}
+                </Button>
+              )}
+            </div>
           </Form>
         </div>
       </div>
     );
+  }
+
+  protected async sendTestPing(): Promise<void> {
+    const self = this as any;
+    self.webhookTestLoading = true;
+    m.redraw();
+
+    try {
+      const res = await app.request<{ ok: boolean; status?: number; body?: string; error?: string }>({
+        method: 'POST',
+        url: `${app.forum.attribute('apiUrl')}/link-click-stats/webhook/test`,
+      });
+
+      if (res.ok) {
+        app.alerts.show(
+          { type: 'success' },
+          app.translator.trans('datlechin-link-clicks.admin.settings.webhook_test_ok', { status: res.status ?? 0 })
+        );
+      } else {
+        const detail = res.error ?? `HTTP ${res.status ?? 0}`;
+        app.alerts.show({ type: 'error' }, app.translator.trans('datlechin-link-clicks.admin.settings.webhook_test_failed', { detail }));
+      }
+    } catch (e) {
+      app.alerts.show({ type: 'error' }, (e as Error).message);
+    } finally {
+      self.webhookTestLoading = false;
+      m.redraw();
+    }
   }
 
   protected renderAnalytics(): Mithril.Vnode<any, any> {

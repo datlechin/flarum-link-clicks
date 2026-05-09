@@ -51,6 +51,9 @@ datlechin-link-clicks:
       webhook_url_help: "Đích nhận JSON payload."
       webhook_secret_label: "Webhook secret"
       webhook_secret_help: "Khi đặt, body request được ký HMAC-SHA256 và signature gửi qua header X-LinkClicks-Signature dạng sha256=HEX_DIGEST. Receiver verify bằng cách tính lại với cùng secret."
+      webhook_test_button: "Gửi test ping"
+      webhook_test_ok: "Webhook trả về HTTP {status}."
+      webhook_test_failed: "Webhook test thất bại: {detail}"
     tags:
       disable_tracking_label: "Tắt theo dõi click link cho tag này"
       disable_tracking_help: "Bài đăng trong các thảo luận có tag này sẽ không được theo dõi click. Số liệu cũ vẫn giữ nguyên."
