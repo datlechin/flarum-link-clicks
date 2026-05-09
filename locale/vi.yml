@@ -90,7 +90,7 @@ datlechin-link-clicks:
       empty: "Chưa có click nào được tính cho link này."
       view_trail_tooltip: "Xem user này đã click những link nào"
     click_trail:
-      title: "Lịch sử click của {user}"
+      title: "Lịch sử click của {name}"
       column_link: "Link"
       column_when: "Thời gian"
       empty: "Chưa có click nào được tính cho user này."

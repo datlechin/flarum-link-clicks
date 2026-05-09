@@ -53,7 +53,7 @@ export default class UserClickTrailModal extends Modal<Attrs> {
 
   title(): Mithril.Children {
     return app.translator.trans('datlechin-link-clicks.admin.click_trail.title', {
-      user: this.attrs.displayName,
+      name: this.attrs.displayName,
     });
   }
 

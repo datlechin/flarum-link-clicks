@@ -90,7 +90,7 @@ datlechin-link-clicks:
       empty: "No counted clicks for this link."
       view_trail_tooltip: "Show what this user clicked"
     click_trail:
-      title: "{user}'s click trail"
+      title: "{name}'s click trail"
       column_link: "Link"
       column_when: "When"
       empty: "No counted clicks recorded for this user."
