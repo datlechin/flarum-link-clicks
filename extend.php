@@ -19,6 +19,7 @@ use Datlechin\LinkClicks\Api\Controller\ListUserPopularLinksController;
 use Datlechin\LinkClicks\Console\BackfillCommand;
 use Datlechin\LinkClicks\Console\DailySchedule;
 use Datlechin\LinkClicks\Console\PurgeEventsCommand;
+use Datlechin\LinkClicks\Console\ReconcileCountsCommand;
 use Datlechin\LinkClicks\Event\ClickCounted;
 use Datlechin\LinkClicks\Event\ClickRecorded;
 use Datlechin\LinkClicks\Formatter\ConfigureUrlTemplate;
@@ -113,7 +114,9 @@ return [
     (new Extend\Console())
         ->command(BackfillCommand::class)
         ->command(PurgeEventsCommand::class)
-        ->schedule(PurgeEventsCommand::class, DailySchedule::class),
+        ->command(ReconcileCountsCommand::class)
+        ->schedule(PurgeEventsCommand::class, DailySchedule::class)
+        ->schedule(ReconcileCountsCommand::class, DailySchedule::class),
 
     (new Extend\Settings())
         ->default('datlechin-link-clicks.enabled', true)
