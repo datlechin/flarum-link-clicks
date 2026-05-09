@@ -99,10 +99,16 @@ export default class DiscussionClickStatsModal extends Modal<Attrs> {
                   {tail && <span className="DiscussionClickStatsModal-path">{tail}</span>}
                 </a>
                 <span className="DiscussionClickStatsModal-stats">
-                  <span className="DiscussionClickStatsModal-stat" title={app.translator.trans('datlechin-link-clicks.forum.discussion_stats.column_total').toString()}>
+                  <span
+                    className="DiscussionClickStatsModal-stat"
+                    title={app.translator.trans('datlechin-link-clicks.forum.discussion_stats.column_total').toString()}
+                  >
                     <i className="fas fa-mouse-pointer" /> {row.total_clicks.toLocaleString()}
                   </span>
-                  <span className="DiscussionClickStatsModal-stat" title={app.translator.trans('datlechin-link-clicks.forum.discussion_stats.column_unique').toString()}>
+                  <span
+                    className="DiscussionClickStatsModal-stat"
+                    title={app.translator.trans('datlechin-link-clicks.forum.discussion_stats.column_unique').toString()}
+                  >
                     <i className="fas fa-user" /> {row.unique_users.toLocaleString()}
                   </span>
                 </span>

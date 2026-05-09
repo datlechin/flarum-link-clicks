@@ -76,7 +76,12 @@ export default class LinkClicksDeviceBreakdown extends Component {
     );
   }
 
-  protected renderColumn(group: 'devices' | 'browsers', counts: Record<string, number>, icons: Record<string, string>, total: number): Mithril.Children {
+  protected renderColumn(
+    group: 'devices' | 'browsers',
+    counts: Record<string, number>,
+    icons: Record<string, string>,
+    total: number
+  ): Mithril.Children {
     const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
     const max = Math.max(...entries.map(([, c]) => c), 1);
 
