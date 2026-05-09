@@ -2,42 +2,34 @@ import app from 'flarum/forum/app';
 import extractText from 'flarum/common/utils/extractText';
 
 /**
- * Document-level click handler that intercepts tracked links pointing
- * outside the forum and shows a native confirmation dialog before letting
- * the navigation proceed. Native `confirm()` is used because it blocks
- * synchronously; an async Mithril modal would lose the racing navigation.
+ * Document-level click handler that intercepts tracked external links
+ * and shows a native confirm dialog before letting the browser navigate.
+ *
+ * Flarum 2.x runs initializers BEFORE app.forum is hydrated, so we
+ * register the listener unconditionally and read the setting lazily at
+ * click time. The listener is a no-op when the setting is off, which
+ * costs effectively nothing per click.
  */
 export default function confirmExternalClicks(): void {
-  // app.forum / app.session etc are only populated AFTER initializers run
-  // in some Flarum 2.x boot paths, so reach for app.data which is set
-  // earlier and survives both orderings.
-  const data = (app as any).data?.resources?.find?.((r: any) => r.type === 'forums')?.attributes ?? (app as any).data?.forum?.attributes ?? {};
-
-  if (!data.linkClicksConfirmExternal) return;
-
-  const forumHost = (() => {
-    try {
-      return new URL(data.baseUrl).host.toLowerCase();
-    } catch {
-      return '';
-    }
-  })();
-
   document.addEventListener(
     'click',
     (event) => {
+      if (!app.forum || !app.forum.attribute<boolean>('linkClicksConfirmExternal')) return;
+
       const target = event.target as Element | null;
       const anchor = target?.closest('a.LinkClicks-link') as HTMLAnchorElement | null;
       if (!anchor) return;
 
       // The anchor href is the tracker redirect URL; the real destination
-      // sits behind the signed token. We can't peek inside the token from
-      // the browser, but we can fall back to the link text or the title
-      // attribute, which is the original URL.
+      // sits in the title attribute (set by RewriteLinksForTracking when
+      // there's no user-supplied title) or in the link text.
       const dest = anchor.title || anchor.textContent || '';
+
       let isExternal = true;
       try {
-        const u = new URL(dest, data.baseUrl);
+        const baseUrl = app.forum.attribute<string>('baseUrl');
+        const forumHost = baseUrl ? new URL(baseUrl).host.toLowerCase() : '';
+        const u = new URL(dest, baseUrl);
         isExternal = !!forumHost && u.host.toLowerCase() !== forumHost;
       } catch {
         isExternal = true;
