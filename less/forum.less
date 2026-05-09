@@ -85,52 +85,110 @@
 }
 
 .DiscussionClickStatsModal {
-    &-table {
-        width: 100%;
-        border-collapse: collapse;
+    &-body {
+        padding: 8px 0 16px;
+    }
+
+    &-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    &-row {
+        display: grid;
+        grid-template-columns: 18px minmax(0, 1fr) auto auto;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 24px;
+        border-bottom: 1px solid var(--control-bg);
+        font-size: 14px;
+
+        &:last-child {
+            border-bottom: 0;
+        }
+
+        &:hover {
+            background: var(--control-bg);
+        }
+    }
+
+    &-typeIcon {
+        color: var(--muted-color);
+        font-size: 12px;
+        text-align: center;
+    }
+
+    &-url {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+        min-width: 0;
+        color: var(--text-color);
+        text-decoration: none;
+
+        &:hover {
+            color: var(--link-color);
+
+            .DiscussionClickStatsModal-host {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    &-host {
+        font-weight: 600;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    &-path {
+        color: var(--muted-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
         font-size: 13px;
-
-        th, td {
-            padding: 8px 10px;
-            border-bottom: 1px solid var(--control-bg);
-            vertical-align: middle;
-        }
-
-        th {
-            text-align: left;
-            color: var(--muted-color);
-            font-weight: 600;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
     }
 
-    &-num {
-        text-align: right;
+    &-stats {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--muted-color);
         font-variant-numeric: tabular-nums;
+        font-size: 13px;
     }
 
-    &-urlCell {
-        max-width: 0;
+    &-stat {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
 
-        a {
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        i {
+            font-size: 11px;
+            opacity: 0.7;
         }
+    }
+
+    &-time {
+        color: var(--muted-color);
+        font-size: 12px;
+        white-space: nowrap;
+        min-width: 80px;
+        text-align: right;
     }
 
     &-empty {
-        padding: 32px 16px;
+        padding: 48px 24px;
         text-align: center;
         color: var(--muted-color);
     }
 
     &-emptyIcon {
-        font-size: 32px;
+        display: block;
+        font-size: 36px;
         margin-bottom: 12px;
-        opacity: 0.5;
+        opacity: 0.4;
     }
 }

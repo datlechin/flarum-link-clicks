@@ -1,7 +1,7 @@
 import app from 'flarum/forum/app';
 import Modal, { IInternalModalAttrs } from 'flarum/common/components/Modal';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
-import dayjs from 'dayjs';
+import humanTime from 'flarum/common/helpers/humanTime';
 import type Mithril from 'mithril';
 
 interface StatRow {
@@ -29,6 +29,26 @@ interface Attrs extends IInternalModalAttrs {
 
 const PAGE_SIZE = 20;
 
+function typeIcon(row: StatRow): string {
+  if (row.is_attachment) return 'fas fa-paperclip';
+  if (row.is_internal) return 'fas fa-link';
+  return 'fas fa-arrow-up-right-from-square';
+}
+
+/**
+ * Best-effort URL parsing for the host/path split. Falls back to showing the
+ * raw URL so we never crash on a tracker URL the browser dislikes.
+ */
+function splitUrl(raw: string): { host: string; tail: string } {
+  try {
+    const u = new URL(raw);
+    const tail = u.pathname + u.search + u.hash;
+    return { host: u.host, tail: tail === '/' ? '' : tail };
+  } catch {
+    return { host: raw, tail: '' };
+  }
+}
+
 export default class DiscussionClickStatsModal extends Modal<Attrs> {
   protected loading = true;
   protected rows: StatRow[] = [];
@@ -48,41 +68,49 @@ export default class DiscussionClickStatsModal extends Modal<Attrs> {
   }
 
   content(): Mithril.Children {
-    return (
-      <div className="Modal-body">
-        {this.loading ? (
+    if (this.loading) {
+      return (
+        <div className="Modal-body DiscussionClickStatsModal-body">
           <LoadingIndicator />
-        ) : this.rows.length === 0 ? (
+        </div>
+      );
+    }
+    if (this.rows.length === 0) {
+      return (
+        <div className="Modal-body DiscussionClickStatsModal-body">
           <div className="DiscussionClickStatsModal-empty">
             <i className="far fa-folder-open DiscussionClickStatsModal-emptyIcon" />
             <p>{app.translator.trans('datlechin-link-clicks.forum.discussion_stats.empty')}</p>
           </div>
-        ) : (
-          <table className="DiscussionClickStatsModal-table">
-            <thead>
-              <tr>
-                <th>{app.translator.trans('datlechin-link-clicks.forum.discussion_stats.column_url')}</th>
-                <th className="DiscussionClickStatsModal-num">{app.translator.trans('datlechin-link-clicks.forum.discussion_stats.column_total')}</th>
-                <th className="DiscussionClickStatsModal-num">{app.translator.trans('datlechin-link-clicks.forum.discussion_stats.column_unique')}</th>
-                <th>{app.translator.trans('datlechin-link-clicks.forum.discussion_stats.column_last')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.rows.map((row) => (
-                <tr>
-                  <td className="DiscussionClickStatsModal-urlCell">
-                    <a href={row.url} target="_blank" rel="noopener noreferrer" title={row.url}>
-                      {row.url}
-                    </a>
-                  </td>
-                  <td className="DiscussionClickStatsModal-num">{row.total_clicks}</td>
-                  <td className="DiscussionClickStatsModal-num">{row.unique_users}</td>
-                  <td>{row.last_clicked ? dayjs(row.last_clicked).format('YYYY-MM-DD HH:mm') : '—'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="Modal-body DiscussionClickStatsModal-body">
+        <ul className="DiscussionClickStatsModal-list">
+          {this.rows.map((row) => {
+            const { host, tail } = splitUrl(row.url);
+            return (
+              <li className="DiscussionClickStatsModal-row">
+                <i className={`${typeIcon(row)} DiscussionClickStatsModal-typeIcon`} aria-hidden="true" />
+                <a className="DiscussionClickStatsModal-url" href={row.url} target="_blank" rel="noopener noreferrer" title={row.url}>
+                  <span className="DiscussionClickStatsModal-host">{host}</span>
+                  {tail && <span className="DiscussionClickStatsModal-path">{tail}</span>}
+                </a>
+                <span className="DiscussionClickStatsModal-stats">
+                  <span className="DiscussionClickStatsModal-stat" title={app.translator.trans('datlechin-link-clicks.forum.discussion_stats.column_total').toString()}>
+                    <i className="fas fa-mouse-pointer" /> {row.total_clicks.toLocaleString()}
+                  </span>
+                  <span className="DiscussionClickStatsModal-stat" title={app.translator.trans('datlechin-link-clicks.forum.discussion_stats.column_unique').toString()}>
+                    <i className="fas fa-user" /> {row.unique_users.toLocaleString()}
+                  </span>
+                </span>
+                <span className="DiscussionClickStatsModal-time">{row.last_clicked ? humanTime(row.last_clicked) : '—'}</span>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     );
   }
