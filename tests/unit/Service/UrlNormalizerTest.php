@@ -115,6 +115,9 @@ class UrlNormalizerTest extends TestCase
         $settings->shouldReceive('get')
             ->with('datlechin-link-clicks.attachment_path_prefixes', '')
             ->andReturn('');
+        $settings->shouldReceive('get')
+            ->with('datlechin-link-clicks.domain_blocklist', '')
+            ->andReturn('');
 
         $config = new Config(['url' => 'https://flarum.test']);
         $normalizer = new UrlNormalizer($settings, $config);
