@@ -4,6 +4,7 @@ datlechin-link-clicks:
     link_tooltip: "{count, plural, one{# person has opened this} other{# people have opened this}}"
     popular_links_title: "Popular links"
     user_popular_links_title: "Most clicked links"
+    confirm_external: "You're about to leave the forum to visit:\n\n{url}\n\nContinue?"
     settings:
       opt_out_label: "Don't count my link clicks"
       opt_out_help: "Your clicks still go through; we just won't add them to the count."
@@ -45,6 +46,12 @@ datlechin-link-clicks:
       tracking_params_placeholder: "ref_url\nyclid\ncustom_param"
       attachment_prefixes_label: "Extra attachment path prefixes"
       attachment_prefixes_help: "URLs on the forum host whose path starts with one of these prefixes are tracked even when internal-link tracking is off. /assets/files/ is built in for Flarum's default uploads disk; add your own when using fof/upload or a custom CDN path."
+      domain_blocklist_label: "Block domains"
+      domain_blocklist_help: "Hosts to skip entirely. One per line. Use *.example.com to match every subdomain. Posts referencing these hosts get no badge and clicks aren't recorded."
+      confirm_external_label: "Confirm before leaving the forum"
+      confirm_external_help: "Show a browser confirm dialog when a reader clicks an external link. Off by default."
+      digest_enabled_label: "Email weekly digest to admins"
+      digest_enabled_help: "Every Monday morning, mail every administrator a plain-text summary of the past week's clicks. Off by default."
       webhook_enabled_label: "Enable webhook"
       webhook_enabled_help: "Forward every recorded click as JSON POST to an external URL via the queue."
       webhook_url_label: "Webhook URL"
@@ -101,6 +108,11 @@ datlechin-link-clicks:
     heatmap:
       title: "Click heatmap (last 30 days)"
       lead: "Each cell is one hour of one day. Darker = busier."
+    timeseries:
+      title: "Daily clicks"
+      total_clicks: "total"
+      avg_per_day: "avg / day"
+      peak_day: "peak day"
 
   gdpr:
     export_description: "All recorded link clicks made by this user."

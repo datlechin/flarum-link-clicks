@@ -10,6 +10,7 @@ import type Mithril from 'mithril';
 import LinkClickersModal from './LinkClickersModal';
 import LinkClicksDomains from './LinkClicksDomains';
 import LinkClicksHeatmap from './LinkClicksHeatmap';
+import LinkClicksTimeSeries from './LinkClicksTimeSeries';
 
 function typeIcon(row: { is_attachment: boolean; is_internal: boolean }): { className: string; titleKey: string } {
   if (row.is_attachment) return { className: 'fas fa-paperclip', titleKey: 'datlechin-link-clicks.admin.analytics.attachment_label' };
@@ -285,6 +286,7 @@ export default class LinkClicksAnalytics extends Component {
           />
         )}
 
+        <LinkClicksTimeSeries />
         <LinkClicksDomains />
         <LinkClicksHeatmap />
       </div>

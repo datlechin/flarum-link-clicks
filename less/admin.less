@@ -334,6 +334,99 @@
     }
 }
 
+.LinkClicksTimeSeries {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--control-bg);
+
+    &-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    &-title {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--muted-color);
+    }
+
+    &-rangeButtons {
+        display: flex;
+        gap: 4px;
+
+        .Button--text {
+            padding: 4px 10px;
+            background: transparent;
+            border: 1px solid var(--control-bg);
+            border-radius: var(--border-radius);
+            color: var(--muted-color);
+            font-size: 12px;
+            cursor: pointer;
+
+            &.active {
+                color: var(--primary-color);
+                border-color: var(--primary-color);
+            }
+
+            &:hover:not(.active) {
+                color: var(--text-color);
+            }
+        }
+    }
+
+    &-summary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        margin-bottom: 12px;
+        font-size: 12px;
+        color: var(--muted-color);
+
+        strong {
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: 600;
+            margin-right: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    &-svg {
+        width: 100%;
+        height: 160px;
+        overflow: visible;
+    }
+
+    &-area {
+        fill: var(--primary-color);
+        opacity: 0.12;
+    }
+
+    &-line {
+        fill: none;
+        stroke: var(--primary-color);
+        stroke-width: 2;
+        stroke-linejoin: round;
+    }
+
+    &-dot {
+        fill: var(--primary-color);
+    }
+
+    &-axis {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 4px;
+        font-size: 11px;
+        color: var(--muted-color);
+    }
+}
+
 .LinkClicksHeatmap {
     margin-top: 32px;
     padding-top: 24px;

@@ -4,6 +4,7 @@ datlechin-link-clicks:
     link_tooltip: "{count} người đã mở link này"
     popular_links_title: "Link nổi bật"
     user_popular_links_title: "Link được click nhiều"
+    confirm_external: "Bạn sắp rời forum để tới:\n\n{url}\n\nTiếp tục?"
     settings:
       opt_out_label: "Không tính click link của tôi"
       opt_out_help: "Click vẫn dẫn tới link bình thường, chỉ không cộng vào số lượt."
@@ -45,6 +46,12 @@ datlechin-link-clicks:
       tracking_params_placeholder: "ref_url\nyclid\ncustom_param"
       attachment_prefixes_label: "Thêm prefix đường dẫn tệp đính kèm"
       attachment_prefixes_help: "URL trên cùng host với forum mà đường dẫn bắt đầu bằng một trong các prefix này sẽ được theo dõi kể cả khi đang tắt theo dõi link nội bộ. /assets/files/ đã built-in cho disk uploads mặc định của Flarum; thêm của bạn khi dùng fof/upload hoặc CDN tùy biến."
+      domain_blocklist_label: "Chặn domain"
+      domain_blocklist_help: "Các host bị bỏ qua hoàn toàn. Mỗi dòng 1 entry. Dùng *.example.com để match mọi subdomain. Post chứa link tới các host này không có badge và click không được ghi nhận."
+      confirm_external_label: "Hỏi trước khi rời forum"
+      confirm_external_help: "Hiện dialog confirm khi user click link ra ngoài. Mặc định tắt."
+      digest_enabled_label: "Gửi digest hàng tuần cho admin"
+      digest_enabled_help: "Sáng thứ hai mỗi tuần, gửi mail plain-text tóm tắt click 7 ngày qua tới mọi admin. Mặc định tắt."
       webhook_enabled_label: "Bật webhook"
       webhook_enabled_help: "Chuyển tiếp mỗi click đã ghi lại dưới dạng JSON POST tới URL ngoài qua queue."
       webhook_url_label: "Webhook URL"
@@ -101,6 +108,11 @@ datlechin-link-clicks:
     heatmap:
       title: "Bản đồ nhiệt click (30 ngày)"
       lead: "Mỗi ô là 1 giờ trong 1 ngày trong tuần. Đậm = nhiều click."
+    timeseries:
+      title: "Click theo ngày"
+      total_clicks: "tổng"
+      avg_per_day: "TB / ngày"
+      peak_day: "ngày cao nhất"
 
   gdpr:
     export_description: "Toàn bộ lượt click link đã được ghi lại cho người dùng này."

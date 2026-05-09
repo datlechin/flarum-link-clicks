@@ -30,6 +30,7 @@ class UrlNormalizerTest extends TestCase
         $settings = Mockery::mock(SettingsRepositoryInterface::class);
         $settings->shouldReceive('get')->with('datlechin-link-clicks.tracking_params_strip', '')->andReturn('');
         $settings->shouldReceive('get')->with('datlechin-link-clicks.attachment_path_prefixes', '')->andReturn('');
+        $settings->shouldReceive('get')->with('datlechin-link-clicks.domain_blocklist', '')->andReturn('');
 
         $config = new Config(['url' => 'https://flarum.test']);
 

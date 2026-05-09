@@ -47,6 +47,8 @@ class UrlNormalizer
 
     /** @var list<string>|null */
     private ?array $cachedPatterns = null;
+    /** @var list<string>|null */
+    private ?array $cachedBlocklist = null;
     private ?string $cachedForumHost = null;
 
     public function __construct(
@@ -68,6 +70,12 @@ class UrlNormalizer
         }
 
         $host = strtolower($parts['host']);
+
+        // Blocklisted hosts return null so the listener treats them as
+        // untrackable, just like a malformed URL.
+        if ($this->isBlocked($host)) {
+            return null;
+        }
         $authority = $this->buildAuthority($host, $scheme, $parts['port'] ?? null);
         $rawPath = $parts['path'] ?? '';
         $path = $this->normalizePath($rawPath, $host);
@@ -174,6 +182,46 @@ class UrlNormalizer
     private function forumHost(): string
     {
         return $this->cachedForumHost ??= strtolower(parse_url($this->config->url(), PHP_URL_HOST) ?? '');
+    }
+
+    /**
+     * Match host against the admin-supplied blocklist. Patterns are exact
+     * host names or `*.example.com` style suffix wildcards.
+     */
+    private function isBlocked(string $host): bool
+    {
+        foreach ($this->blocklist() as $pattern) {
+            if (str_starts_with($pattern, '*.')) {
+                $suffix = substr($pattern, 1); // ".example.com"
+                if (str_ends_with($host, $suffix) || $host === substr($suffix, 1)) {
+                    return true;
+                }
+            } elseif ($host === $pattern) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function blocklist(): array
+    {
+        if ($this->cachedBlocklist !== null) {
+            return $this->cachedBlocklist;
+        }
+
+        $raw = (string) $this->settings->get('datlechin-link-clicks.domain_blocklist', '');
+        if ($raw === '') {
+            return $this->cachedBlocklist = [];
+        }
+
+        return $this->cachedBlocklist = array_values(array_filter(array_map(
+            fn (string $p) => strtolower(trim($p)),
+            preg_split('/[,\r\n]+/', $raw) ?: [],
+        )));
     }
 
     /**

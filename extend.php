@@ -13,6 +13,7 @@ namespace Datlechin\LinkClicks;
 
 use Datlechin\LinkClicks\Api\Controller\ExportLinkClickStatsController;
 use Datlechin\LinkClicks\Api\Controller\LinkClickHeatmapController;
+use Datlechin\LinkClicks\Api\Controller\LinkClickTimeSeriesController;
 use Datlechin\LinkClicks\Api\Controller\ListLinkClickDomainsController;
 use Datlechin\LinkClicks\Api\Controller\ListLinkClickersController;
 use Datlechin\LinkClicks\Api\Controller\ListLinkClickStatsController;
@@ -25,6 +26,8 @@ use Datlechin\LinkClicks\Console\DailySchedule;
 use Datlechin\LinkClicks\Console\DetectAnomaliesCommand;
 use Datlechin\LinkClicks\Console\PurgeEventsCommand;
 use Datlechin\LinkClicks\Console\ReconcileCountsCommand;
+use Datlechin\LinkClicks\Console\SendDigestCommand;
+use Datlechin\LinkClicks\Console\WeeklySchedule;
 use Datlechin\LinkClicks\Event\ClickCounted;
 use Datlechin\LinkClicks\Event\ClickRecorded;
 use Datlechin\LinkClicks\Formatter\ConfigureUrlTemplate;
@@ -100,6 +103,7 @@ return [
         ->get('/link-click-stats', 'datlechin-link-clicks.stats', ListLinkClickStatsController::class)
         ->get('/link-click-stats/domains', 'datlechin-link-clicks.stats.domains', ListLinkClickDomainsController::class)
         ->get('/link-click-stats/heatmap', 'datlechin-link-clicks.stats.heatmap', LinkClickHeatmapController::class)
+        ->get('/link-click-stats/timeseries', 'datlechin-link-clicks.stats.timeseries', LinkClickTimeSeriesController::class)
         ->get('/link-click-stats/export', 'datlechin-link-clicks.stats.export', ExportLinkClickStatsController::class)
         ->get('/link-click-stats/{id}/clickers', 'datlechin-link-clicks.stats.clickers', ListLinkClickersController::class)
         ->post('/link-click-stats/webhook/test', 'datlechin-link-clicks.webhook.test', TestWebhookController::class),
@@ -125,9 +129,11 @@ return [
         ->command(PurgeEventsCommand::class)
         ->command(ReconcileCountsCommand::class)
         ->command(DetectAnomaliesCommand::class)
+        ->command(SendDigestCommand::class)
         ->schedule(PurgeEventsCommand::class, DailySchedule::class)
         ->schedule(ReconcileCountsCommand::class, DailySchedule::class)
-        ->schedule(DetectAnomaliesCommand::class, DailySchedule::class),
+        ->schedule(DetectAnomaliesCommand::class, DailySchedule::class)
+        ->schedule(SendDigestCommand::class, WeeklySchedule::class),
 
     (new Extend\Settings())
         ->default('datlechin-link-clicks.enabled', true)
@@ -139,6 +145,9 @@ return [
         ->default('datlechin-link-clicks.bot_user_agents', '')
         ->default('datlechin-link-clicks.tracking_params_strip', '')
         ->default('datlechin-link-clicks.attachment_path_prefixes', '')
+        ->default('datlechin-link-clicks.domain_blocklist', '')
+        ->default('datlechin-link-clicks.confirm_external_clicks', false)
+        ->serializeToForum('linkClicksConfirmExternal', 'datlechin-link-clicks.confirm_external_clicks', 'boolval')
         ->default('datlechin-link-clicks.skip_guests', false)
         ->default('datlechin-link-clicks.open_in_new_window', false)
         ->default('datlechin-link-clicks.webhook_enabled', false)
@@ -146,6 +155,7 @@ return [
         ->default('datlechin-link-clicks.webhook_secret', '')
         ->default('datlechin-link-clicks.anomaly_threshold_ratio', 10)
         ->default('datlechin-link-clicks.anomaly_min_clicks', 20)
+        ->default('datlechin-link-clicks.digest_enabled', false)
         ->serializeToForum('linkClicksMinDisplay', 'datlechin-link-clicks.min_display_count', 'intval'),
 
     (new Extend\User())

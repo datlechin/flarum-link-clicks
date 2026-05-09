@@ -155,6 +155,26 @@ export default class LinkClicksPage extends ExtensionPage {
               help: app.translator.trans('datlechin-link-clicks.admin.settings.attachment_prefixes_help'),
               placeholder: '/assets/files/\n/uploads/',
             })}
+            {this.buildSettingComponent({
+              setting: 'datlechin-link-clicks.domain_blocklist',
+              type: 'textarea',
+              rows: 4,
+              label: app.translator.trans('datlechin-link-clicks.admin.settings.domain_blocklist_label'),
+              help: app.translator.trans('datlechin-link-clicks.admin.settings.domain_blocklist_help'),
+              placeholder: 'spammer.example\n*.tracking.example',
+            })}
+            {this.buildSettingComponent({
+              setting: 'datlechin-link-clicks.confirm_external_clicks',
+              type: 'boolean',
+              label: app.translator.trans('datlechin-link-clicks.admin.settings.confirm_external_label'),
+              help: app.translator.trans('datlechin-link-clicks.admin.settings.confirm_external_help'),
+            })}
+            {this.buildSettingComponent({
+              setting: 'datlechin-link-clicks.digest_enabled',
+              type: 'boolean',
+              label: app.translator.trans('datlechin-link-clicks.admin.settings.digest_enabled_label'),
+              help: app.translator.trans('datlechin-link-clicks.admin.settings.digest_enabled_help'),
+            })}
             <div className="Form-group Form-controls">{this.submitButton()}</div>
           </Form>
         </div>
