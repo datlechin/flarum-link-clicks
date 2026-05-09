@@ -4,7 +4,7 @@ datlechin-link-clicks:
     link_tooltip: "{count, plural, one{# person has opened this} other{# people have opened this}}"
     popular_links_title: "Popular links"
     user_popular_links_title: "Most clicked links"
-    confirm_external: "You're about to leave the forum to visit:\n\n{url}\n\nContinue?"
+    confirm_external: "You're about to leave the forum. Continue?"
     settings:
       opt_out_label: "Don't count my link clicks"
       opt_out_help: "Your clicks still go through; we just won't add them to the count."

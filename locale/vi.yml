@@ -4,7 +4,7 @@ datlechin-link-clicks:
     link_tooltip: "{count} người đã mở link này"
     popular_links_title: "Link nổi bật"
     user_popular_links_title: "Link được click nhiều"
-    confirm_external: "Bạn sắp rời forum để tới:\n\n{url}\n\nTiếp tục?"
+    confirm_external: "Bạn sắp rời forum. Tiếp tục?"
     settings:
       opt_out_label: "Không tính click link của tôi"
       opt_out_help: "Click vẫn dẫn tới link bình thường, chỉ không cộng vào số lượt."
