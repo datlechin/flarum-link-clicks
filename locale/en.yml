@@ -88,6 +88,19 @@ datlechin-link-clicks:
       guest: "Guest"
       anonymized: "Anonymized"
       empty: "No counted clicks for this link."
+      view_trail_tooltip: "Show what this user clicked"
+    click_trail:
+      title: "{user}'s click trail"
+      column_link: "Link"
+      column_when: "When"
+      empty: "No counted clicks recorded for this user."
+    domains:
+      title: "Top domains (last 30 days)"
+      column_domain: "Domain"
+      column_urls: "URLs"
+    heatmap:
+      title: "Click heatmap (last 30 days)"
+      lead: "Each cell is one hour of one day. Darker = busier."
 
   gdpr:
     export_description: "All recorded link clicks made by this user."

@@ -4,6 +4,7 @@ import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import Pagination from 'flarum/common/components/Pagination';
 import dayjs from 'dayjs';
 import type Mithril from 'mithril';
+import UserClickTrailModal from './UserClickTrailModal';
 
 interface ClickerRow {
   user: { id: number; username: string; displayName: string; avatarUrl: string | null } | null;
@@ -99,16 +100,21 @@ export default class LinkClickersModal extends Modal<Attrs> {
   protected renderRow(row: ClickerRow): Mithril.Children {
     let who: Mithril.Children;
     if (row.user) {
-      const profileUrl = `${app.forum.attribute('baseUrl')}/u/${encodeURIComponent(row.user.username)}`;
+      const u = row.user;
       who = (
-        <a href={profileUrl} target="_blank" rel="noopener">
-          {row.user.avatarUrl ? (
-            <img className="Avatar LinkClickersModal-avatar" src={row.user.avatarUrl} alt="" />
+        <button
+          type="button"
+          className="LinkClickersModal-userBtn"
+          onclick={() => app.modal.show(UserClickTrailModal, { userId: u.id, username: u.username, displayName: u.displayName })}
+          title={app.translator.trans('datlechin-link-clicks.admin.clickers.view_trail_tooltip').toString()}
+        >
+          {u.avatarUrl ? (
+            <img className="Avatar LinkClickersModal-avatar" src={u.avatarUrl} alt="" />
           ) : (
-            <span className="Avatar LinkClickersModal-avatar LinkClickersModal-avatarFallback">{row.user.displayName.charAt(0).toUpperCase()}</span>
+            <span className="Avatar LinkClickersModal-avatar LinkClickersModal-avatarFallback">{u.displayName.charAt(0).toUpperCase()}</span>
           )}
-          <span>{row.user.displayName}</span>
-        </a>
+          <span>{u.displayName}</span>
+        </button>
       );
     } else if (row.anonymized) {
       who = (

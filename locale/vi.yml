@@ -88,6 +88,19 @@ datlechin-link-clicks:
       guest: "Khách"
       anonymized: "Đã ẩn danh"
       empty: "Chưa có click nào được tính cho link này."
+      view_trail_tooltip: "Xem user này đã click những link nào"
+    click_trail:
+      title: "Lịch sử click của {user}"
+      column_link: "Link"
+      column_when: "Thời gian"
+      empty: "Chưa có click nào được tính cho user này."
+    domains:
+      title: "Top domain (30 ngày gần nhất)"
+      column_domain: "Domain"
+      column_urls: "Số URL"
+    heatmap:
+      title: "Bản đồ nhiệt click (30 ngày)"
+      lead: "Mỗi ô là 1 giờ trong 1 ngày trong tuần. Đậm = nhiều click."
 
   gdpr:
     export_description: "Toàn bộ lượt click link đã được ghi lại cho người dùng này."

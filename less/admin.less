@@ -301,4 +301,91 @@
         font-size: 28px;
         color: var(--control-bg);
     }
+
+    &-userBtn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        color: var(--text-color);
+        cursor: pointer;
+        font: inherit;
+
+        &:hover {
+            color: var(--link-color);
+        }
+    }
+}
+
+.LinkClicksDomains {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--control-bg);
+
+    &-title {
+        margin: 0 0 12px;
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--muted-color);
+    }
+}
+
+.LinkClicksHeatmap {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--control-bg);
+
+    &-title {
+        margin: 0 0 4px;
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--muted-color);
+    }
+
+    &-lead {
+        margin: 0 0 12px;
+        font-size: 12px;
+        color: var(--muted-color);
+    }
+
+    &-grid {
+        display: grid;
+        gap: 2px;
+        font-size: 11px;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &-cell {
+        height: 22px;
+        border-radius: 2px;
+        background: var(--control-bg);
+        text-align: center;
+        line-height: 22px;
+        color: var(--body-bg);
+        font-weight: 600;
+    }
+
+    &-dayLabel {
+        padding: 2px 8px 2px 0;
+        text-align: right;
+        color: var(--muted-color);
+        line-height: 22px;
+    }
+
+    &-hourLabel {
+        text-align: center;
+        color: var(--muted-color);
+        font-size: 10px;
+        line-height: 16px;
+    }
+
+    &-cornerCell {
+        // grid header spacer
+    }
 }
