@@ -2,7 +2,42 @@
 
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format, [Semantic Versioning](https://semver.org/).
 
-## [1.0.0] (unreleased)
+## [1.1.0] - 2026-05-09
+
+### Added
+
+- Daily clicks chart (30/60/90d) with total, average, and peak summary.
+- Top domains rollup.
+- Click heatmap, 7×24 weekday/hour grid.
+- Device and browser breakdown.
+- User click trail drill-down from the clickers modal.
+- Per-discussion click stats from the discussion controls dropdown.
+- Domain blocklist setting. Supports `*.example.com` wildcards.
+- External link confirm dialog (off by default).
+- `link-clicks:reconcile` console command. Walks `post_links` and writes back counter drift. `--dry-run` available. Daily-scheduled.
+- `link-clicks:build-daily-rollup` console command. Backs the time series chart on large forums. `--rebuild` wipes and recomputes. Daily-scheduled.
+- `link-clicks:detect-anomalies` console command. Daily-scheduled.
+- `link-clicks:send-digest` console command. Mails weekly summary to admins. Off by default.
+- Webhook backoff: `[10s, 1m, 5m, 30m, 2h]`, retries lifted from 3 to 5.
+- `X-LinkClicks-Delivery-Id` header on every webhook POST for receiver-side dedup.
+- "Send test ping" button on the webhook tab. Synchronous. Surfaces HTTP status.
+- API filter `discussion_id` on `/link-click-stats`.
+- Forum attribute `canViewLinkClickAnalytics`.
+- Settings: `domain_blocklist`, `confirm_external_clicks`, `digest_enabled`, `anomaly_threshold_ratio`, `anomaly_min_clicks`.
+
+### Changed
+
+- `link_click_events` gains `device_class` and `browser_family` columns, populated at click time.
+- `post_links` gains a `domain` column so domain rollups don't reparse URLs at query time.
+- Time series endpoint reads pre-aggregated daily totals for past days. Today still comes from raw events.
+
+### Fixed
+
+- Confirm dialog now matches tracked links by href pattern. Class-based detection missed posts when the formatter cache was stale.
+- Forum-side init no longer crashes on `app.forum.attribute()` because of Flarum 2.x boot order.
+- `UserClickTrailModal` no longer crashes when its title placeholder collided with the translator's reserved `user` key.
+
+## [1.0.0] - 2026-05-09
 
 First release.
 
@@ -41,4 +76,5 @@ First release.
 
 - `php flarum link-clicks:backfill` registers links from posts that existed before the extension was enabled.
 
+[1.1.0]: https://github.com/datlechin/flarum-link-clicks/releases/tag/v1.1.0
 [1.0.0]: https://github.com/datlechin/flarum-link-clicks/releases/tag/v1.0.0

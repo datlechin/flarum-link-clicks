@@ -15,8 +15,12 @@ On top of the badge:
 - **Popular links** sidebar widget on each discussion.
 - **Most clicked links** widget on user profiles.
 - **Live updates** when `flarum/realtime` is installed. Badges tick up without a page reload.
-- **Admin analytics** with filters, CSV export, and a per-link drill-down that shows who clicked.
-- **Webhook** to forward click events to your own service.
+- **Admin analytics** with filters, CSV export, and a per-link drill-down that shows who clicked. Daily clicks chart, top domains rollup, weekday-by-hour heatmap, and a mobile / tablet / desktop split.
+- **Per-discussion click stats**. Mods get a "Click stats" item in the discussion controls dropdown, scoped to that thread.
+- **User click trail**. Drill from a clicker into every link that user has opened.
+- **Webhook** to forward click events. Exponential backoff retries, dedup header, and a "Send test ping" button.
+- **Console tooling**: backfill, counter reconcile, daily rollup, anomaly detection, weekly digest.
+- **Domain blocklist** and an optional **confirm-before-leaving** dialog for outbound clicks.
 - **Privacy controls**: forum-wide skip-guests, per-user opt-out, author per-post toggle, tag-level opt-out (with `flarum/tags`), and full GDPR export / anonymize / delete (with `flarum/gdpr`).
 
 | Popular links sidebar | Most clicked links on profile |
@@ -59,6 +63,11 @@ The extension page (Admin → Extensions → Link Clicks) has three tabs.
 | `bot_user_agents` |  | Extra User-Agent fragments treated as bots. One per line. |
 | `tracking_params_strip` |  | Extra query params to strip before counting. One per line. Trailing `*` matches a prefix. Defaults already cover `utm_*`, `fbclid`, `gclid`, `mc_*`, `igshid`, `_ga` and others. |
 | `attachment_path_prefixes` |  | Extra URL path prefixes treated as attachments. One per line. `/assets/files/` is built in. |
+| `domain_blocklist` |  | Hosts to skip entirely. One per line. `*.example.com` matches every subdomain. Posts referencing these hosts get no badge and clicks aren't recorded. |
+| `confirm_external_clicks` | `false` | Show a browser confirm dialog when a reader clicks an external tracked link. |
+| `digest_enabled` | `false` | Mail every administrator a plain-text summary of the past week's clicks every Monday morning. |
+| `anomaly_threshold_ratio` | `10` | Daily anomaly check logs a warning when the past 24 hours' click volume exceeds the prior six-day average by this ratio. |
+| `anomaly_min_clicks` | `20` | Floor below which the anomaly check is skipped, so quiet forums don't fire on every blip. |
 
 ### Webhook
 
@@ -84,15 +93,16 @@ Each recorded click is sent to your URL as a JSON POST. Toggle it on, paste a UR
 
 Adds one permission: **View link click analytics**. Admins have it by default. Grant to other groups from Admin → Permissions.
 
-## Backfilling
+## Console commands
 
-Posts created before the extension was enabled aren't tracked yet. To bring them in:
-
-```sh
-php flarum link-clicks:backfill
-```
-
-Safe to re-run. `--chunk=N` tunes batch size. `--from-id=X` resumes after a failure.
+| Command | What it does |
+|---|---|
+| `link-clicks:backfill` | Registers links from posts that existed before the extension was enabled. Safe to re-run. `--chunk=N`, `--from-id=X`. |
+| `link-clicks:reconcile` | Walks every tracked link and writes back any drift between the stored counter and the actual recorded events. `--dry-run` reports without writing. Daily-scheduled. |
+| `link-clicks:build-daily-rollup` | Aggregates raw events into the daily rollup table that powers the time-series chart on large forums. First run backfills from the oldest event; subsequent runs resume. `--rebuild` wipes and recomputes. Daily-scheduled. |
+| `link-clicks:detect-anomalies` | Logs a warning when the past day's click volume jumps versus the prior six-day average. Daily-scheduled. |
+| `link-clicks:purge-events` | Removes click events older than the retention window. Daily-scheduled. |
+| `link-clicks:send-digest` | Mails the weekly summary to administrators. Weekly-scheduled (Monday 06:00). |
 
 ## Privacy and GDPR
 
