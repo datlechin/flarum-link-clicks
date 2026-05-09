@@ -8,11 +8,16 @@ import extractText from 'flarum/common/utils/extractText';
  * synchronously; an async Mithril modal would lose the racing navigation.
  */
 export default function confirmExternalClicks(): void {
-  if (!app.forum.attribute<boolean>('linkClicksConfirmExternal')) return;
+  // app.forum / app.session etc are only populated AFTER initializers run
+  // in some Flarum 2.x boot paths, so reach for app.data which is set
+  // earlier and survives both orderings.
+  const data = (app as any).data?.resources?.find?.((r: any) => r.type === 'forums')?.attributes ?? (app as any).data?.forum?.attributes ?? {};
+
+  if (!data.linkClicksConfirmExternal) return;
 
   const forumHost = (() => {
     try {
-      return new URL(app.forum.attribute<string>('baseUrl')).host.toLowerCase();
+      return new URL(data.baseUrl).host.toLowerCase();
     } catch {
       return '';
     }
@@ -32,7 +37,7 @@ export default function confirmExternalClicks(): void {
       const dest = anchor.title || anchor.textContent || '';
       let isExternal = true;
       try {
-        const u = new URL(dest, app.forum.attribute<string>('baseUrl'));
+        const u = new URL(dest, data.baseUrl);
         isExternal = !!forumHost && u.host.toLowerCase() !== forumHost;
       } catch {
         isExternal = true;
