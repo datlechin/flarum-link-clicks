@@ -9,6 +9,7 @@ export default class LinkClicksPage extends ExtensionPage {
     protected renderTabButton(tab: Tab, icon: string): Mithril.Vnode<any, any>;
     protected renderSettings(): Mithril.Vnode<any, any>;
     protected renderWebhook(): Mithril.Vnode<any, any>;
+    protected sendTestPing(): Promise<void>;
     protected renderAnalytics(): Mithril.Vnode<any, any>;
 }
 export {};
