@@ -1,10 +1,12 @@
 /**
- * Document-level click handler that intercepts tracked external links
- * and shows a native confirm dialog before letting the browser navigate.
+ * Document-level capture-phase click handler. Intercepts every click on a
+ * tracker redirect anchor (href contains `/lcc/track`) and shows a native
+ * confirm dialog before letting the browser navigate.
  *
- * Flarum 2.x runs initializers BEFORE app.forum is hydrated, so we
- * register the listener unconditionally and read the setting lazily at
- * click time. The listener is a no-op when the setting is off, which
- * costs effectively nothing per click.
+ * Match by href instead of class because:
+ *   - the formatter cache might be stale and miss the LinkClicks-link
+ *     class on some posts;
+ *   - the destination URL is hidden behind a signed token, so we can't
+ *     show "you're leaving for X" — the message stays generic.
  */
 export default function confirmExternalClicks(): void;
