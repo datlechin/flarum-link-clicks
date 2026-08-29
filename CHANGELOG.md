@@ -15,7 +15,7 @@
 
 ### Fixed
 
-- Tracked links no longer look like links back to the forum. The tracking URL was written into the link's own `url` attribute, which core reads afterwards to decide where a link goes — so every tracked link was classified as internal. External links lost their `rel="ugc nofollow"`, and the SPA router intercepted the click and routed to `/lcc/track`, a path no route matches, leaving the reader on the index with nothing recorded. The destination now stays in `url` and only the rendered `href` is swapped.
+- Tracked links no longer look like links back to the forum. The tracking URL was written into the link's own `url` attribute, which core reads afterwards to decide where a link goes, so every tracked link was classified as internal. External links lost their `rel="ugc nofollow"`, and the SPA router intercepted the click and routed to `/lcc/track`, a path no route matches, leaving the reader on the index with nothing recorded. The destination now stays in `url` and only the rendered `href` is swapped.
 - `link-clicks:backfill` skipped attachments when `track_internal` was off, unlike the listener it was meant to mirror. Both now go through one shared syncer.
 
 ### Changed

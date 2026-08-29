@@ -46,7 +46,7 @@ class BuildDailyRollupCommand extends Command
 
         $startDate = $this->resolveStartDate($db, $settings);
         if ($startDate === null) {
-            $this->info('No counted events yet — nothing to roll up.');
+            $this->info('No counted events yet, nothing to roll up.');
             return self::SUCCESS;
         }
 

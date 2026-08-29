@@ -22,7 +22,7 @@ Then enable it in **Admin → Extensions**.
 **In the forum**
 
 - Click badges on links, `#hashtags` and `@mentions`.
-- Trending hashtags on the index, ranked by how sharply a hashtag's click rate has risen — not by lifetime total, so the list actually changes.
+- Trending hashtags on the index, ranked by how sharply a hashtag's click rate has risen, not by lifetime total, so the list actually changes.
 - Popular links in the discussion sidebar, and most-clicked links on user profiles.
 - Live counts when `flarum/realtime` is installed, without a reload.
 
@@ -85,7 +85,7 @@ Then enable it in **Admin → Extensions**.
 
 ### Permission
 
-**View link click analytics** — admins have it by default. Grant it to other groups in **Admin → Permissions**.
+**View link click analytics**. Admins have it by default. Grant it to other groups in **Admin → Permissions**.
 
 ## Webhook
 
@@ -135,7 +135,7 @@ Everything below is scheduled already; run them by hand only when you want to.
 
 ## Privacy and GDPR
 
-Each recorded click stores an IP address and User-Agent, which are personal data under GDPR. As the forum operator you need to disclose the collection in your privacy notice, choose a lawful basis (legitimate interest is the usual fit), and set a retention window — `event_retention_days` and the daily purge handle the last part.
+Each recorded click stores an IP address and User-Agent, which are personal data under GDPR. As the forum operator you need to disclose the collection in your privacy notice, choose a lawful basis (legitimate interest is the usual fit), and set a retention window. `event_retention_days` and the daily purge handle the last part.
 
 Install `flarum/gdpr` and access, export and erasure requests are handled for you.
 
@@ -143,7 +143,7 @@ The defaults lean private: bots are dropped, `DNT: 1` is honoured, authors can't
 
 ## Adding your own trackable
 
-Anything clickable in a post can be counted. Implement `TrackableSource` — it says which formatter tag to read, how to find targets in a post, and where a click should land — then register it:
+Anything clickable in a post can be counted. Implement `TrackableSource`. It says which formatter tag to read, how to find targets in a post, and where a click should land. Then register it:
 
 ```php
 (new Datlechin\LinkClicks\Extend\TrackableSources())

@@ -29,7 +29,7 @@ use s9e\TextFormatter\Configurator\Helpers\AVTHelper;
  * when flarum/mentions and flarum/tags are both enabled, and the tag is
  * registered inside another extension's own configure callback. Our callback
  * therefore has to run after theirs, which is what the `optional-dependencies`
- * entry in composer.json guarantees — Flarum topologically sorts extension
+ * entry in composer.json guarantees, Flarum topologically sorts extension
  * boot order over that graph, and formatter callbacks run in boot order.
  *
  * Runs once when the formatter cache is built (and again when the extension
@@ -79,7 +79,7 @@ class ConfigureTrackableTemplates
      *
      * So the destination stays honest in the XML and only the rendered `href`
      * is swapped, falling back to the template's original expression whenever
-     * the render pass didn't set a tracking URL — a disabled extension, an
+     * the render pass didn't set a tracking URL, a disabled extension, an
      * opted-out post, or a target that isn't tracked.
      */
     private function makeHrefTrackable(Element $a): void

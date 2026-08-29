@@ -77,7 +77,7 @@ interface TrackableSource
      * Attribute names this source's {@see apply()} may set, so the XSL
      * template can be patched to forward them into the rendered HTML.
      *
-     * Never list an attribute the tag's own template already computes — the
+     * Never list an attribute the tag's own template already computes, the
      * mention templates build `class` and `style` with `<xsl:attribute>`, and
      * forwarding those would collide with them.
      *

@@ -10,7 +10,7 @@ import extractText from 'flarum/common/utils/extractText';
  *   - the formatter cache might be stale and miss the LinkClicks-link
  *     class on some posts;
  *   - the destination URL is hidden behind a signed token, so we can't
- *     show "you're leaving for X" — the message stays generic.
+ *     show "you're leaving for X", the message stays generic.
  */
 export default function confirmExternalClicks(): void {
   document.addEventListener(
