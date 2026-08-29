@@ -41,7 +41,7 @@ class MentionSourcesTest extends TestCase
         $this->prepareDatabase([
             User::class => [$this->normalUser()],
             Discussion::class => [
-                ['id' => 1, 'title' => 'test', 'created_at' => Carbon::now(), 'last_posted_at' => Carbon::now(), 'user_id' => 2, 'first_post_id' => 1, 'comment_count' => 2],
+                ['id' => 1, 'title' => 'test', 'created_at' => Carbon::now(), 'last_posted_at' => Carbon::now(), 'user_id' => 2, 'first_post_id' => null, 'comment_count' => 2],
             ],
         ]);
     }

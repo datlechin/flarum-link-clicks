@@ -53,13 +53,16 @@ return [
         });
 
         $schema->table('post_links', function (Blueprint $table) {
-            $table->dropUnique('post_links_post_id_url_hash_unique');
+            // Named by columns, not by string: the original key was created
+            // the same way, so its real name carries the table prefix and a
+            // hardcoded name misses it on any prefixed install.
+            $table->dropUnique(['post_id', 'url_hash']);
         });
     },
 
     'down' => function (Builder $schema) {
         $schema->table('post_links', function (Blueprint $table) {
-            $table->unique(['post_id', 'url_hash'], 'post_links_post_id_url_hash_unique');
+            $table->unique(['post_id', 'url_hash']);
         });
 
         $schema->table('post_links', function (Blueprint $table) {
