@@ -19,6 +19,7 @@ use Datlechin\LinkClicks\Api\Controller\ListLinkClickDomainsController;
 use Datlechin\LinkClicks\Api\Controller\ListLinkClickersController;
 use Datlechin\LinkClicks\Api\Controller\ListLinkClickStatsController;
 use Datlechin\LinkClicks\Api\Controller\ListPopularLinksController;
+use Datlechin\LinkClicks\Api\Controller\ListTrendingHashtagsController;
 use Datlechin\LinkClicks\Api\Controller\ListUserClickTrailController;
 use Datlechin\LinkClicks\Api\Controller\ListUserPopularLinksController;
 use Datlechin\LinkClicks\Api\Controller\TestWebhookController;
@@ -32,13 +33,18 @@ use Datlechin\LinkClicks\Console\SendDigestCommand;
 use Datlechin\LinkClicks\Console\WeeklySchedule;
 use Datlechin\LinkClicks\Event\ClickCounted;
 use Datlechin\LinkClicks\Event\ClickRecorded;
-use Datlechin\LinkClicks\Formatter\ConfigureUrlTemplate;
-use Datlechin\LinkClicks\Formatter\RewriteLinksForTracking;
+use Datlechin\LinkClicks\Extend\TrackableSources;
+use Datlechin\LinkClicks\Formatter\ConfigureTrackableTemplates;
+use Datlechin\LinkClicks\Formatter\RewriteTrackableLinks;
 use Datlechin\LinkClicks\Http\Controller\TrackClickController;
 use Datlechin\LinkClicks\Listener\BroadcastWhenClickCounted;
 use Datlechin\LinkClicks\Listener\DispatchClickWebhook;
 use Datlechin\LinkClicks\Listener\SyncPostLinks;
 use Datlechin\LinkClicks\Provider\LinkClicksProvider;
+use Datlechin\LinkClicks\Source\PostMentionSource;
+use Datlechin\LinkClicks\Source\TagMentionSource;
+use Datlechin\LinkClicks\Source\UrlSource;
+use Datlechin\LinkClicks\Source\UserMentionSource;
 use Datlechin\LinkClicks\Service\TagOptOut;
 use Flarum\Api\Context;
 use Flarum\Api\Endpoint;
@@ -68,8 +74,11 @@ return [
         ->cast('link_clicks_disabled', 'boolean'),
 
     (new Extend\Formatter())
-        ->configure(ConfigureUrlTemplate::class)
-        ->render(RewriteLinksForTracking::class),
+        ->configure(ConfigureTrackableTemplates::class)
+        ->render(RewriteTrackableLinks::class),
+
+    (new TrackableSources())
+        ->add(UrlSource::class),
 
     (new Extend\Event())
         ->listen(Posted::class, SyncPostLinks::class)
@@ -85,7 +94,18 @@ return [
             (new \Flarum\Gdpr\Extend\UserData())
                 ->addType(\Datlechin\LinkClicks\Gdpr\LinkClicks::class),
         ])
+        ->whenExtensionEnabled('flarum-mentions', fn () => [
+            (new TrackableSources())
+                ->add(UserMentionSource::class)
+                ->add(PostMentionSource::class),
+        ])
         ->whenExtensionEnabled('flarum-tags', fn () => [
+            // TAGMENTION only exists when flarum-mentions is enabled too. If it
+            // isn't, the tag is never registered, so the template patch skips
+            // it and extraction finds nothing to do.
+            (new TrackableSources())
+                ->add(TagMentionSource::class),
+
             (new Extend\ApiResource(\Flarum\Tags\Api\Resource\TagResource::class))
                 ->fields(fn () => [
                     Schema\Boolean::make('linkClicksDisabled')
@@ -100,6 +120,7 @@ return [
 
     (new Extend\Routes('api'))
         ->get('/discussions/{id}/popular-links', 'datlechin-link-clicks.popular', ListPopularLinksController::class)
+        ->get('/trending-hashtags', 'datlechin-link-clicks.trending', ListTrendingHashtagsController::class)
         ->get('/users/{id}/popular-links', 'datlechin-link-clicks.user-popular', ListUserPopularLinksController::class)
         ->get('/users/{id}/click-trail', 'datlechin-link-clicks.user-trail', ListUserClickTrailController::class)
         ->get('/link-click-stats', 'datlechin-link-clicks.stats', ListLinkClickStatsController::class)
@@ -167,6 +188,11 @@ return [
         ->default('datlechin-link-clicks.anomaly_threshold_ratio', 10)
         ->default('datlechin-link-clicks.anomaly_min_clicks', 20)
         ->default('datlechin-link-clicks.digest_enabled', false)
+        ->default('datlechin-link-clicks.track_tag_mentions', true)
+        ->default('datlechin-link-clicks.track_user_mentions', true)
+        ->default('datlechin-link-clicks.track_post_mentions', true)
+        ->default('datlechin-link-clicks.trending_enabled', true)
+        ->default('datlechin-link-clicks.trending_min_clicks', 5)
         ->serializeToForum('linkClicksMinDisplay', 'datlechin-link-clicks.min_display_count', 'intval'),
 
     (new Extend\User())

@@ -21,7 +21,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int         $id
  * @property int         $post_id
  * @property int         $discussion_id
+ * @property string      $source
  * @property string      $url
+ * @property string|null $label
+ * @property int|null    $source_id
  * @property string      $url_hash
  * @property bool        $is_internal
  * @property bool        $is_attachment
@@ -34,6 +37,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class PostLink extends AbstractModel
 {
+    /**
+     * Built-in `source` values. Third-party sources registered through
+     * {@see \Datlechin\LinkClicks\Extend\TrackableSources} supply their own.
+     */
+    public const SOURCE_URL = 'url';
+    public const SOURCE_TAG_MENTION = 'tag_mention';
+    public const SOURCE_USER_MENTION = 'user_mention';
+    public const SOURCE_POST_MENTION = 'post_mention';
+
     protected $table = 'post_links';
 
     public $timestamps = false;
@@ -60,7 +72,10 @@ class PostLink extends AbstractModel
 
     public function getDisplayUrlAttribute(): string
     {
-        return self::truncateForDisplay($this->url);
+        // Sources whose target isn't a URL a reader would recognise store a
+        // display name instead; URL rows leave it null and keep deriving
+        // their label from the URL.
+        return $this->label ?? self::truncateForDisplay($this->url);
     }
 
     /**

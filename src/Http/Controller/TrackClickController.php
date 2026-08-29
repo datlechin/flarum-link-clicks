@@ -14,6 +14,7 @@ namespace Datlechin\LinkClicks\Http\Controller;
 use Carbon\Carbon;
 use Datlechin\LinkClicks\PostLink;
 use Datlechin\LinkClicks\Service\ClickRecorder;
+use Datlechin\LinkClicks\Service\TrackableSourceRegistry;
 use Datlechin\LinkClicks\Service\TrackingUrlSigner;
 use Datlechin\LinkClicks\ValueObject\ClickContext;
 use Flarum\Http\RequestUtil;
@@ -36,6 +37,7 @@ class TrackClickController implements RequestHandlerInterface
     public function __construct(
         protected TrackingUrlSigner $signer,
         protected ClickRecorder $recorder,
+        protected TrackableSourceRegistry $sources,
     ) {
     }
 
@@ -67,11 +69,17 @@ class TrackClickController implements RequestHandlerInterface
             return new EmptyResponse(404);
         }
 
-        // Defence-in-depth: validate the redirect destination scheme. The URL
-        // is normalised to http(s) at write time, but re-checking here closes
-        // the door to any future code path that bypasses the normaliser.
-        $scheme = parse_url($postLink->url, PHP_URL_SCHEME);
-        if (! is_string($scheme) || ! in_array(strtolower($scheme), ['http', 'https'], strict: true)) {
+        // The source owns where a click lands. Mentions resolve their target
+        // live so a tag or user renamed since the post was written still goes
+        // to the right place; a source whose extension has since been disabled
+        // resolves to nothing and 404s like any other failure.
+        $source = $this->sources->find($postLink->source);
+        if ($source === null) {
+            return new EmptyResponse(404);
+        }
+
+        $target = $source->resolveTarget($postLink);
+        if ($target === null) {
             return new EmptyResponse(404);
         }
 
@@ -91,7 +99,7 @@ class TrackClickController implements RequestHandlerInterface
             $this->recorder->record($context);
         }
 
-        return (new RedirectResponse($postLink->url))
+        return (new RedirectResponse($target))
             ->withHeader('Referrer-Policy', 'no-referrer-when-downgrade')
             ->withHeader('Cache-Control', 'no-store');
     }

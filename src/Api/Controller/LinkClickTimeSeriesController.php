@@ -34,6 +34,8 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class LinkClickTimeSeriesController implements RequestHandlerInterface
 {
+    use ScopesBySource;
+
     private const ALLOWED_DAYS = [30, 60, 90];
 
     public function __construct(
@@ -61,7 +63,7 @@ class LinkClickTimeSeriesController implements RequestHandlerInterface
 
         // Past days: pre-aggregated per (date, post_link_id), so summing here
         // collapses the matrix to one row per day in a single round trip.
-        $rollup = $this->db->table('link_click_daily')
+        $rollup = $this->scopeToSource($this->db->table('link_click_daily'), $request, 'link_click_daily')
             ->where('date', '>=', $since->format('Y-m-d'))
             ->where('date', '<=', $yesterday->format('Y-m-d'))
             ->groupBy('date')
@@ -91,7 +93,7 @@ class LinkClickTimeSeriesController implements RequestHandlerInterface
         $rangeStart = Carbon::parse($earliestMissing)->startOfDay();
         $rangeEnd = $today->copy()->endOfDay();
 
-        $this->db->table('link_click_events')
+        $this->scopeToSource($this->db->table('link_click_events'), $request, 'link_click_events')
             ->where('counted', true)
             ->where('clicked_at', '>=', $rangeStart)
             ->where('clicked_at', '<=', $rangeEnd)

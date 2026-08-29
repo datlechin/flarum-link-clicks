@@ -50,6 +50,10 @@ class DispatchClickWebhook
             'post_link' => [
                 'id' => (int) $link->id,
                 'url' => $link->url,
+                // Additive: receivers written against the URL-only payload keep
+                // working, and 'url' still names a real destination.
+                'source' => $link->source,
+                'label' => $link->label,
                 'is_internal' => (bool) $link->is_internal,
                 'is_attachment' => (bool) $link->is_attachment,
                 'post_id' => (int) $link->post_id,

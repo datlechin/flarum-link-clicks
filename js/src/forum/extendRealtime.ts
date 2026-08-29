@@ -13,13 +13,19 @@ export default function extendRealtime(): void {
     .onBothChannelsEvent('linkClickCounted', (raw: unknown) => {
       const data = raw as LinkClickCountedPayload;
       const minDisplay = app.forum.attribute<number>('linkClicksMinDisplay');
-      const selector = `.LinkClicks-link[data-post-id="${data.post_id}"][data-url-id="${data.url_id}"]`;
+      // Matched on the data attributes alone rather than on a class: every
+      // tracked link carries these two, but mention pills deliberately keep
+      // their own classes and never gain `LinkClicks-link`.
+      const selector = `[data-post-id="${data.post_id}"][data-url-id="${data.url_id}"]`;
 
       document.querySelectorAll<HTMLAnchorElement>(selector).forEach((el) => {
         if (data.clicks_count >= minDisplay) {
           el.setAttribute('data-clicks', String(data.clicks_count));
 
-          if (!el.hasAttribute('data-custom-title')) {
+          // Only plain links get the count as a tooltip; a mention already
+          // says what it points at, and the server doesn't render a title for
+          // one either.
+          if (el.classList.contains('LinkClicks-link') && !el.hasAttribute('data-custom-title')) {
             el.setAttribute('title', data.title);
             el.setAttribute('data-original-title', data.title);
           }

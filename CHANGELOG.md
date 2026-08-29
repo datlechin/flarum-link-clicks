@@ -2,6 +2,28 @@
 
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format, [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-08-29
+
+### Added
+
+- Hashtag, user-mention and post-mention click tracking. `#hashtag`, `@username` and post mentions are links like any other, so they are now counted alongside plain URLs. Needs `flarum/mentions`, and `flarum/tags` for hashtags.
+- Trending hashtags widget on the forum index. Ranked by how far a hashtag's click rate has risen above its own weekly average, not by lifetime total, so the list is worth reading twice. A brand-new hashtag is smoothed rather than allowed to top the list on a single click.
+- `TrackableSource` contract and the `TrackableSources` extender. Any extension can register its own kind of clickable thing and get extraction, rendering, click recording, analytics, GDPR and the console tooling for free.
+- Settings: `track_tag_mentions`, `track_user_mentions`, `track_post_mentions`, `trending_enabled`, `trending_min_clicks`.
+- `filter[source]` on the analytics, export, heatmap and time-series endpoints.
+- Webhook payload gains `post_link.source` and `post_link.label`. Additive; existing receivers are unaffected.
+
+### Fixed
+
+- Tracked links no longer look like links back to the forum. The tracking URL was written into the link's own `url` attribute, which core reads afterwards to decide where a link goes — so every tracked link was classified as internal. External links lost their `rel="ugc nofollow"`, and the SPA router intercepted the click and routed to `/lcc/track`, a path no route matches, leaving the reader on the index with nothing recorded. The destination now stays in `url` and only the rendered `href` is swapped.
+- `link-clicks:backfill` skipped attachments when `track_internal` was off, unlike the listener it was meant to mirror. Both now go through one shared syncer.
+
+### Changed
+
+- `post_links` gains `source`, `source_id` and `label`. Existing rows become `source = 'url'` with no backfill pass.
+- Analytics totals now include mention clicks. Use `filter[source]=url` for the previous scope.
+- Identity for mentions is the tag, user or post id rather than the URL, so renaming one keeps its click history in one piece.
+
 ## [1.1.0] - 2026-05-09
 
 ### Added

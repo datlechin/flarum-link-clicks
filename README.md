@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md) [![Latest Stable Version](https://img.shields.io/packagist/v/datlechin/flarum-link-clicks.svg)](https://packagist.org/packages/datlechin/flarum-link-clicks) [![Total Downloads](https://img.shields.io/packagist/dt/datlechin/flarum-link-clicks.svg)](https://packagist.org/packages/datlechin/flarum-link-clicks)
 
-A Flarum extension that puts a click count next to every link in a post.
+A Flarum extension that puts a click count next to every link in a post — including `#hashtags` and `@mentions`.
 
 ![Badge in a post](screenshots/badge.png)
 
@@ -12,6 +12,8 @@ Every `http(s)` link grows a small badge once people start clicking. The badge i
 
 On top of the badge:
 
+- **Hashtags and mentions are links too.** `#hashtag`, `@username` and post mentions all point somewhere, so they are counted alongside ordinary links. Each is identified by the tag, user or post it points at, so renaming one keeps its history in one piece instead of starting over.
+- **Trending hashtags** widget on the forum index, ranked by how far a hashtag's click rate has risen above its own weekly average rather than by lifetime total.
 - **Popular links** sidebar widget on each discussion.
 - **Most clicked links** widget on user profiles.
 - **Live updates** when `flarum/realtime` is installed. Badges tick up without a page reload.
@@ -64,6 +66,11 @@ The extension page (Admin → Extensions → Link Clicks) has three tabs.
 | `tracking_params_strip` |  | Extra query params to strip before counting. One per line. Trailing `*` matches a prefix. Defaults already cover `utm_*`, `fbclid`, `gclid`, `mc_*`, `igshid`, `_ga` and others. |
 | `attachment_path_prefixes` |  | Extra URL path prefixes treated as attachments. One per line. `/assets/files/` is built in. |
 | `domain_blocklist` |  | Hosts to skip entirely. One per line. `*.example.com` matches every subdomain. Posts referencing these hosts get no badge and clicks aren't recorded. |
+| `track_tag_mentions` | `true` | Count clicks on `#hashtags`. Needs `flarum/mentions` and `flarum/tags`. |
+| `track_user_mentions` | `true` | Count clicks on `@username` mentions. Needs `flarum/mentions`. |
+| `track_post_mentions` | `true` | Count clicks on post mentions. Needs `flarum/mentions`. |
+| `trending_enabled` | `true` | Show the trending hashtags widget on the forum index. |
+| `trending_min_clicks` | `5` | A hashtag below this many clicks in the last counted day never trends, however sharply it rose. |
 | `confirm_external_clicks` | `false` | Show a browser confirm dialog when a reader clicks an external tracked link. |
 | `digest_enabled` | `false` | Mail every administrator a plain-text summary of the past week's clicks every Monday morning. |
 | `anomaly_threshold_ratio` | `10` | Daily anomaly check logs a warning when the past 24 hours' click volume exceeds the prior six-day average by this ratio. |
@@ -77,7 +84,7 @@ Each recorded click is sent to your URL as a JSON POST. Toggle it on, paste a UR
 {
   "event": "click_recorded",
   "counted": true,
-  "post_link": { "id": 123, "url": "https://example.com/page", "is_internal": false, "is_attachment": false, "post_id": 456, "discussion_id": 789, "clicks_count": 42 },
+  "post_link": { "id": 123, "url": "https://example.com/page", "source": "url", "label": null, "is_internal": false, "is_attachment": false, "post_id": 456, "discussion_id": 789, "clicks_count": 42 },
   "actor": { "user_id": 10, "username": "alice" },
   "ip_address": "192.168.1.1",
   "user_agent": "Mozilla/5.0 ...",
@@ -85,13 +92,24 @@ Each recorded click is sent to your URL as a JSON POST. Toggle it on, paste a UR
 }
 ```
 
-`actor` is `null` for guest clicks. `counted` is `false` when the click hit a dedup or self-click rule (the badge didn't tick up). When a secret is set, the signature is sent in `X-LinkClicks-Signature: sha256=<hex>`, computed over the raw body. Delivery is async and retried a few times on failure.
+`source` is `url`, `tag_mention`, `user_mention` or `post_mention`, and `label` carries a display name (`#support`, `@alice`) for the mention sources, `null` for plain links. Both are additive — a receiver written against the earlier payload keeps working, and `url` still names a real destination. `actor` is `null` for guest clicks. `counted` is `false` when the click hit a dedup or self-click rule (the badge didn't tick up). When a secret is set, the signature is sent in `X-LinkClicks-Signature: sha256=<hex>`, computed over the raw body. Delivery is async and retried a few times on failure.
 
 ![Drill-down: who clicked this link](screenshots/drilldown-modal.png)
 
 ### Permissions
 
 Adds one permission: **View link click analytics**. Admins have it by default. Grant to other groups from Admin → Permissions.
+
+## Extending
+
+Anything clickable in a post can be counted. Implement `Datlechin\LinkClicks\Contract\TrackableSource` — it declares the TextFormatter tag to read, how to find targets in a post, and where a click should land — and register it:
+
+```php
+(new Datlechin\LinkClicks\Extend\TrackableSources())
+    ->add(MyPollVoteSource::class),
+```
+
+The new source then flows through extraction, rendering, click recording, the analytics endpoints, GDPR export and the console tooling without any further wiring.
 
 ## Console commands
 

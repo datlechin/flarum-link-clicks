@@ -27,6 +27,7 @@ class LinkClickStatsQuery
 {
     public function __construct(
         protected ConnectionInterface $db,
+        protected TrackableSourceRegistry $sources,
     ) {
     }
 
@@ -43,7 +44,7 @@ class LinkClickStatsQuery
 
     /**
      * @param array<string, mixed> $raw
-     * @return array{since?: Carbon, until?: Carbon, is_internal?: bool, is_attachment?: bool, tag?: string, discussion_id?: int}
+     * @return array{since?: Carbon, until?: Carbon, is_internal?: bool, is_attachment?: bool, tag?: string, discussion_id?: int, source?: string}
      *
      * @throws \InvalidArgumentException on malformed input (controller maps to 422)
      */
@@ -76,6 +77,14 @@ class LinkClickStatsQuery
             $out[$boolKey] = $bool;
         }
 
+        if (! empty($raw['source'])) {
+            $source = (string) $raw['source'];
+            if ($this->sources->find($source) === null) {
+                throw new \InvalidArgumentException("filter[source] is not a known source.");
+            }
+            $out['source'] = $source;
+        }
+
         if (! empty($raw['tag'])) {
             $out['tag'] = (string) $raw['tag'];
         }
@@ -92,7 +101,7 @@ class LinkClickStatsQuery
     }
 
     /**
-     * @param array{since?: Carbon, until?: Carbon, is_internal?: bool, is_attachment?: bool, tag?: string, discussion_id?: int} $filter
+     * @param array{since?: Carbon, until?: Carbon, is_internal?: bool, is_attachment?: bool, tag?: string, discussion_id?: int, source?: string} $filter
      */
     public function baseQuery(array $filter): Builder
     {
@@ -112,6 +121,9 @@ class LinkClickStatsQuery
         }
         if (isset($filter['until'])) {
             $query->where('link_click_events.clicked_at', '<=', $filter['until']);
+        }
+        if (isset($filter['source'])) {
+            $query->where('post_links.source', $filter['source']);
         }
         if (isset($filter['is_internal'])) {
             $query->where('post_links.is_internal', $filter['is_internal']);

@@ -62,10 +62,27 @@ class RenderTest extends TestCase
         $rendered = $this->renderPost(1, withRequest: true);
 
         $this->assertStringContainsString('class="LinkClicks-link"', $rendered);
-        $this->assertMatchesRegularExpression('#url="[^"]*/lcc/track\?u=[A-Za-z0-9_-]+"#', $rendered);
+        $this->assertMatchesRegularExpression('#data-lc-href="[^"]*/lcc/track\?u=[A-Za-z0-9_-]+"#', $rendered);
         $this->assertStringContainsString('data-post-id="1"', $rendered);
         $this->assertStringContainsString('data-url-id="1"', $rendered);
         $this->assertStringContainsString('data-clicks="17"', $rendered);
+    }
+
+    /**
+     * The tracking URL goes in its own attribute so that `url` still names the
+     * real destination when core inspects it. Rewriting `url` made every
+     * tracked link look like a link back to the forum, which cost external
+     * links their `rel="ugc nofollow"` and let the SPA router swallow the
+     * click and route to `/lcc/track`, a path no route matches.
+     */
+    #[Test]
+    public function render_callback_leaves_the_real_destination_in_url(): void
+    {
+        $rendered = $this->renderPost(1, withRequest: true);
+
+        $this->assertStringContainsString('url="https://example.com/page"', $rendered);
+        $this->assertStringNotContainsString('UrlLink--internal', $rendered);
+        $this->assertStringContainsString('rel="ugc nofollow"', $rendered);
     }
 
     #[Test]

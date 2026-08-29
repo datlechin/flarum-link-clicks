@@ -93,6 +93,37 @@ export default class LinkClicksPage extends ExtensionPage {
               help: app.translator.trans('datlechin-link-clicks.admin.settings.track_internal_help'),
             })}
             {this.buildSettingComponent({
+              setting: 'datlechin-link-clicks.track_tag_mentions',
+              type: 'boolean',
+              label: app.translator.trans('datlechin-link-clicks.admin.settings.track_tag_mentions_label'),
+              help: app.translator.trans('datlechin-link-clicks.admin.settings.track_tag_mentions_help'),
+            })}
+            {this.buildSettingComponent({
+              setting: 'datlechin-link-clicks.track_user_mentions',
+              type: 'boolean',
+              label: app.translator.trans('datlechin-link-clicks.admin.settings.track_user_mentions_label'),
+              help: app.translator.trans('datlechin-link-clicks.admin.settings.track_user_mentions_help'),
+            })}
+            {this.buildSettingComponent({
+              setting: 'datlechin-link-clicks.track_post_mentions',
+              type: 'boolean',
+              label: app.translator.trans('datlechin-link-clicks.admin.settings.track_post_mentions_label'),
+              help: app.translator.trans('datlechin-link-clicks.admin.settings.track_post_mentions_help'),
+            })}
+            {this.buildSettingComponent({
+              setting: 'datlechin-link-clicks.trending_enabled',
+              type: 'boolean',
+              label: app.translator.trans('datlechin-link-clicks.admin.settings.trending_enabled_label'),
+              help: app.translator.trans('datlechin-link-clicks.admin.settings.trending_enabled_help'),
+            })}
+            {this.buildSettingComponent({
+              setting: 'datlechin-link-clicks.trending_min_clicks',
+              type: 'number',
+              min: 0,
+              label: app.translator.trans('datlechin-link-clicks.admin.settings.trending_min_clicks_label'),
+              help: app.translator.trans('datlechin-link-clicks.admin.settings.trending_min_clicks_help'),
+            })}
+            {this.buildSettingComponent({
               setting: 'datlechin-link-clicks.open_in_new_window',
               type: 'boolean',
               label: app.translator.trans('datlechin-link-clicks.admin.settings.open_new_window_label'),

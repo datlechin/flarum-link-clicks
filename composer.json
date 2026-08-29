@@ -33,6 +33,7 @@
         "flarum/phpstan": "^2.0",
         "flarum/realtime": "^2.0",
         "flarum/gdpr": "^2.0",
+        "flarum/mentions": "^2.0",
         "flarum/tags": "^2.0"
     },
     "autoload": {
@@ -53,7 +54,9 @@
             "title": "Link Clicks",
             "category": "feature",
             "optional-dependencies": [
-                "flarum/realtime"
+                "flarum/realtime",
+                "flarum/mentions",
+                "flarum/tags"
             ],
             "icon": {
                 "name": "fas fa-arrow-pointer",
