@@ -112,7 +112,7 @@ export default class DiscussionClickStatsModal extends Modal<Attrs> {
                     <i className="fas fa-user" /> {row.unique_users.toLocaleString()}
                   </span>
                 </span>
-                <span className="DiscussionClickStatsModal-time">{row.last_clicked ? humanTime(new Date(row.last_clicked)) : '—'}</span>
+                <span className="DiscussionClickStatsModal-time">{row.last_clicked ? humanTime(new Date(row.last_clicked)) : ', '}</span>
               </li>
             );
           })}

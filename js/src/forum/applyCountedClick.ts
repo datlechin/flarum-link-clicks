@@ -9,7 +9,7 @@ export interface CountedClick {
  * Update every rendered copy of a link after someone else clicked it.
  *
  * The badge itself is CSS reading `data-clicks`, so moving the count is all
- * that's needed — no redraw, and it works on server-rendered post HTML that
+ * that's needed, no redraw, and it works on server-rendered post HTML that
  * Mithril doesn't own.
  *
  * Kept apart from the realtime subscription so it can be tested without the

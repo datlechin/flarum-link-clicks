@@ -65,8 +65,8 @@ class UserAgentClassifier
     /**
      * Coarse-grained device class for analytics breakdowns.
      *
-     * Tablets are checked before mobiles because tablet UA strings — iPad,
-     * Android tablets without "Mobile" — are often supersets of mobile
+     * Tablets are checked before mobiles because tablet UA strings, iPad,
+     * Android tablets without "Mobile", are often supersets of mobile
      * markers and would otherwise misclassify.
      */
     public function classifyDevice(string $rawUa): string
@@ -102,7 +102,7 @@ class UserAgentClassifier
      * Browser family without the "is this a bot" axis. The classify() method
      * mixes bot detection in for the click policy gate; this one is purely
      * for analytics aggregation, so a bot UA with "chrome" still returns
-     * 'chrome' — bot rows are filtered upstream and never reach the column.
+     * 'chrome', bot rows are filtered upstream and never reach the column.
      */
     public function classifyBrowser(string $rawUa): string
     {

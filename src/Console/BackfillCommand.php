@@ -23,7 +23,7 @@ use Illuminate\Console\Command;
  *
  * Goes through the same {@see PostLinkSyncer} as the Posted/Revised listener,
  * so a backfilled post ends up with exactly the rows it would have got had the
- * extension been enabled when it was written — every registered source
+ * extension been enabled when it was written, every registered source
  * included, not just plain URLs.
  */
 class BackfillCommand extends Command

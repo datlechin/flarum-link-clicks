@@ -19,7 +19,7 @@ use Illuminate\Database\Query\Builder;
  * Shared filter parsing and base query construction for the analytics
  * endpoints (paginated JSON list + full CSV export).
  *
- * Keeps the SQL definition of "an analytics row" in one place — both
+ * Keeps the SQL definition of "an analytics row" in one place, both
  * endpoints must agree on how rows are filtered and joined, otherwise the
  * CSV would silently disagree with what the admin sees in the table.
  */

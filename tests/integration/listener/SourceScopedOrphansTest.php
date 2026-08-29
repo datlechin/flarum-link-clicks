@@ -30,8 +30,8 @@ use PHPUnit\Framework\Attributes\Test;
 /**
  * Orphan deletion has to be scoped to the source that produced the rows.
  *
- * Deleting by post id alone would mean any source that didn't run — because
- * the extension providing it is currently disabled, say — silently loses every
+ * Deleting by post id alone would mean any source that didn't run, because
+ * the extension providing it is currently disabled, say, silently loses every
  * row it ever wrote the next time someone edits the post.
  */
 class SourceScopedOrphansTest extends TestCase

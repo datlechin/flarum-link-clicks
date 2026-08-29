@@ -21,7 +21,7 @@ use Flarum\Settings\SettingsRepositoryInterface;
 use s9e\TextFormatter\Utils;
 
 /**
- * Post mentions, the `POSTMENTION` tag from flarum/mentions — the link a quote
+ * Post mentions, the `POSTMENTION` tag from flarum/mentions, the link a quote
  * or an `@"Name"#p123` reply leaves behind.
  *
  * Keyed on the mentioned post's id. The rendered URL includes the discussion's

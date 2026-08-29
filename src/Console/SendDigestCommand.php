@@ -134,7 +134,7 @@ class SendDigestCommand extends Command
     {
         $lines = [];
         $lines[] = 'Link clicks digest';
-        $lines[] = sprintf('%s — %s', $since->format('M j'), $until->format('M j, Y'));
+        $lines[] = sprintf('%s, %s', $since->format('M j'), $until->format('M j, Y'));
         $lines[] = '';
         $lines[] = sprintf('Total clicks: %s', number_format($totalClicks));
         $lines[] = sprintf('New tracked links: %s', number_format($newLinks));
@@ -144,7 +144,7 @@ class SendDigestCommand extends Command
             $lines[] = 'Top external links';
             $lines[] = str_repeat('-', 40);
             foreach ($topLinks as $i => $row) {
-                $lines[] = sprintf('%2d. %s — %s clicks', $i + 1, $row->url, number_format((int) $row->c));
+                $lines[] = sprintf('%2d. %s, %s clicks', $i + 1, $row->url, number_format((int) $row->c));
             }
             $lines[] = '';
         }

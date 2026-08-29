@@ -23,8 +23,8 @@ use Illuminate\Database\Schema\Builder;
  * "example.com/t/support"); it stays null for URL rows, which keep deriving
  * their display from the URL itself.
  *
- * `source_id` is the id of whatever the row points at — a tag, a user, a post
- * — so a click can resolve its destination live instead of trusting a URL that
+ * `source_id` is the id of whatever the row points at (a tag, a user, a post),
+ * so a click can resolve its destination live instead of trusting a URL that
  * was correct when the post was written. Deliberately carries no foreign key:
  * a forum can install this extension before flarum/mentions or flarum/tags
  * exist, and nothing re-runs a migration when a peer extension shows up later.

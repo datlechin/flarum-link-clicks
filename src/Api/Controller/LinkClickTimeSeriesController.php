@@ -29,7 +29,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  * millions of events that's the difference between scanning a 90-day slice
  * of the events table and scanning a tiny rollup plus one day of raw rows.
  *
- * Falls back gracefully when the rollup hasn't been built yet — any day
+ * Falls back gracefully when the rollup hasn't been built yet, any day
  * missing from the rollup is filled in from the raw events table on demand.
  */
 class LinkClickTimeSeriesController implements RequestHandlerInterface
@@ -84,7 +84,7 @@ class LinkClickTimeSeriesController implements RequestHandlerInterface
         }
 
         // Today is always read from raw events because the rollup deliberately
-        // stops at yesterday — today's count is still moving.
+        // stops at yesterday, today's count is still moving.
         $missingDates = array_diff_key($buckets, $rolledUpDates);
         // Always include today even if rolledUpDates somehow contains it.
         $missingDates[$today->format('Y-m-d')] = 0;

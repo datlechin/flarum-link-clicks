@@ -25,7 +25,7 @@ use s9e\TextFormatter\Utils;
  * `#hashtag` mentions, the `TAGMENTION` tag flarum/mentions produces when
  * flarum/tags is enabled.
  *
- * These are links like any other — they point at `/t/{slug}` — but they came
+ * These are links like any other, they point at `/t/{slug}`, but they came
  * from a different formatter tag, so the extension never saw them. That made
  * click counts quietly inconsistent: pasting a link to a tag page was counted
  * while writing `#tag`, which lands in the same place, was not.
@@ -100,7 +100,7 @@ class TagMentionSource implements TrackableSource
     public function shouldPersist(TrackedTarget $target): bool
     {
         // Deliberately not gated on track_internal. That setting exists to keep
-        // the focus on outbound traffic, and it defaults to off — applying it
+        // the focus on outbound traffic, and it defaults to off, applying it
         // here would mean no forum ever records a hashtag click unless the
         // admin first turned on something unrelated.
         return (bool) $this->settings->get('datlechin-link-clicks.track_tag_mentions', true);

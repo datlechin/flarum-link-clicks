@@ -26,8 +26,8 @@ use s9e\TextFormatter\Configurator;
  * The template patch that redirects a link, exercised through the real XSL
  * renderer.
  *
- * The integration tests stop at the s9e XML — they never run the XSL-to-HTML
- * pass — so nothing there can tell whether the rewritten `href` actually comes
+ * The integration tests stop at the s9e XML, they never run the XSL-to-HTML
+ * pass, so nothing there can tell whether the rewritten `href` actually comes
  * out right. These build a configurator directly and render, which is also a
  * tighter way to cover the part most likely to break: rebuilding each
  * template's original attribute value template as the fallback branch.
@@ -69,7 +69,7 @@ class ConfigureTrackableTemplatesTest extends TestCase
 
     /**
      * The attribute carrying the tracking URL is read by the template, not
-     * copied to the output — leaving it in the HTML would put a second copy of
+     * copied to the output, leaving it in the HTML would put a second copy of
      * the redirect on every link for no reason.
      */
     #[Test]

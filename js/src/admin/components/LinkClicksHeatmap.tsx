@@ -63,7 +63,7 @@ export default class LinkClicksHeatmap extends Component {
             cells[dow].map((count, hour) => (
               <div
                 className="LinkClicksHeatmap-cell"
-                title={`${label} ${hour}:00 — ${count} click${count === 1 ? '' : 's'}`}
+                title={`${label} ${hour}:00, ${count} click${count === 1 ? '' : 's'}`}
                 style={{
                   backgroundColor:
                     count === 0 ? 'transparent' : `rgba(var(--primary-color-rgb, 102, 102, 102), ${(0.15 + (count / max) * 0.85).toFixed(2)})`,

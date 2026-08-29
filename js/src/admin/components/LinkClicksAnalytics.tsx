@@ -266,8 +266,8 @@ export default class LinkClicksAnalytics extends Component {
                         {row.unique_users}
                       </button>
                     </td>
-                    <td>{row.first_clicked ? dayjs(row.first_clicked).format('YYYY-MM-DD') : '—'}</td>
-                    <td>{row.last_clicked ? dayjs(row.last_clicked).format('YYYY-MM-DD') : '—'}</td>
+                    <td>{row.first_clicked ? dayjs(row.first_clicked).format('YYYY-MM-DD') : ', '}</td>
+                    <td>{row.last_clicked ? dayjs(row.last_clicked).format('YYYY-MM-DD') : ', '}</td>
                   </tr>
                 );
               })}
