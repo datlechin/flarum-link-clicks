@@ -113,10 +113,14 @@ class ListTrendingHashtagsController implements RequestHandlerInterface
             $priorTotal = (int) ($baseline[$row->url_hash] ?? 0);
             $perDay = $priorTotal / (self::BASELINE_DAYS - 1);
 
-            // Laplace smoothing. Without it a brand-new hashtag divides by a
-            // zero baseline and any single click outranks every established
-            // tag, which is exactly the list nobody wants to read.
-            $velocity = ($count + 1) / ($perDay + 1);
+            // Additive smoothing, using the admin's own noise floor as the
+            // prior. A hashtag with no history has nothing to divide by, so
+            // some constant is needed either way; making it the floor ties
+            // "how much evidence is enough" to the number they already set.
+            // A constant of 1 is far too weak — it lets a brand-new tag with a
+            // handful of clicks outrank one that genuinely tripled.
+            $prior = max(1, $minClicks);
+            $velocity = ($count + $prior) / ($perDay + $prior);
 
             $ranked[] = [
                 'id' => (int) $row->id,

@@ -87,14 +87,15 @@ class UrlSource implements TrackableSource
 
     public function forwardedAttributes(): array
     {
+        // `class`, `target` and `rel` are absent on purpose: core already
+        // forwards those three for the URL tag in
+        // Formatter::configureExternalLinks(). Listing them again emits each
+        // one twice in the rendered HTML.
         return [
             'data-clicks',
             'data-post-id',
             'data-url-id',
             'data-custom-title',
-            'class',
-            'target',
-            'rel',
         ];
     }
 

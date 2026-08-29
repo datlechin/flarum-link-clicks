@@ -42,16 +42,28 @@ return [
             $table->unsignedInteger('source_id')->nullable();
         });
 
+        // Create the wider key before dropping the old one, never the other way
+        // round. MySQL and MariaDB require an index whose first column is the
+        // foreign key's, and `post_id` has one; dropping the only such index
+        // fails with "needed in a foreign key constraint". Both of these lead
+        // with `post_id`, so doing it in this order leaves the constraint
+        // covered throughout.
         $schema->table('post_links', function (Blueprint $table) {
-            $table->dropUnique(['post_id', 'url_hash']);
             $table->unique(['post_id', 'source', 'url_hash'], 'post_links_post_source_hash_uq');
+        });
+
+        $schema->table('post_links', function (Blueprint $table) {
+            $table->dropUnique('post_links_post_id_url_hash_unique');
         });
     },
 
     'down' => function (Builder $schema) {
         $schema->table('post_links', function (Blueprint $table) {
+            $table->unique(['post_id', 'url_hash'], 'post_links_post_id_url_hash_unique');
+        });
+
+        $schema->table('post_links', function (Blueprint $table) {
             $table->dropUnique('post_links_post_source_hash_uq');
-            $table->unique(['post_id', 'url_hash']);
         });
 
         $schema->table('post_links', function (Blueprint $table) {
