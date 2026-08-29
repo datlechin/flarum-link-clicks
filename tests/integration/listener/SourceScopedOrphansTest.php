@@ -12,9 +12,11 @@
 namespace Datlechin\LinkClicks\Tests\Integration\Listener;
 
 use Carbon\Carbon;
+use Datlechin\LinkClicks\Contract\TrackableSource;
 use Datlechin\LinkClicks\Extend\TrackableSources;
 use Datlechin\LinkClicks\PostLink;
-use Datlechin\LinkClicks\Tests\Integration\Fixture\StubSource;
+use Datlechin\LinkClicks\ValueObject\RenderContext;
+use Datlechin\LinkClicks\ValueObject\TrackedTarget;
 use Flarum\Discussion\Discussion;
 use Flarum\Post\CommentPost;
 use Flarum\Post\Event\Posted;
@@ -117,5 +119,70 @@ class SourceScopedOrphansTest extends TestCase
     private function actor(): User
     {
         return User::query()->findOrFail(2);
+    }
+}
+
+/**
+ * A second source, so the test can prove behaviour that only appears once more
+ * than one kind of trackable thing exists. Always finds exactly one target,
+ * whatever the post says.
+ *
+ * Declared here rather than in its own file because the container resolves it
+ * by name: a separate file would have to sit at a PSR-4 path matching its
+ * namespace exactly, which is easy to get wrong on a case-insensitive
+ * filesystem and only fails on Linux.
+ */
+class StubSource implements TrackableSource
+{
+    public const KEY = 'stub';
+
+    public function key(): string
+    {
+        return self::KEY;
+    }
+
+    public function tagName(): string
+    {
+        return 'STUB';
+    }
+
+    public function extract(string $parsedXml): array
+    {
+        $hash = hash('sha256', self::KEY.':1');
+
+        return [
+            $hash => new TrackedTarget(
+                hash: $hash,
+                url: 'https://stub.test/target',
+                label: 'stub target',
+            ),
+        ];
+    }
+
+    public function shouldPersist(TrackedTarget $target): bool
+    {
+        return true;
+    }
+
+    public function forwardedAttributes(): array
+    {
+        return ['data-clicks'];
+    }
+
+    public function identify(array $attrs): ?string
+    {
+        return hash('sha256', self::KEY.':1');
+    }
+
+    public function apply(array $attrs, PostLink $link, string $trackingUrl, RenderContext $context): array
+    {
+        $attrs['data-lc-href'] = $trackingUrl;
+
+        return $attrs;
+    }
+
+    public function resolveTarget(PostLink $link): ?string
+    {
+        return $link->url;
     }
 }

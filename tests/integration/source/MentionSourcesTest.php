@@ -13,6 +13,7 @@ namespace Datlechin\LinkClicks\Tests\Integration\Source;
 
 use Carbon\Carbon;
 use Datlechin\LinkClicks\PostLink;
+use Datlechin\LinkClicks\Source\UserMentionSource;
 use Flarum\Discussion\Discussion;
 use Flarum\Post\CommentPost;
 use Flarum\Post\Event\Posted;
@@ -90,14 +91,20 @@ class MentionSourcesTest extends TestCase
         $this->assertSame(hash('sha256', 'post_mention:1'), $link->url_hash);
     }
 
+    /**
+     * Asked of the source directly rather than through a Posted event: the
+     * mentions extension listens for that too and would try to record a
+     * mention of a user that isn't there, tripping its own foreign key before
+     * this assertion is ever reached.
+     */
     #[Test]
     public function a_mention_of_something_that_no_longer_exists_is_skipped(): void
     {
-        $post = $this->insertPost(2, '<t><p><USERMENTION displayname="ghost" id="9999">@ghost</USERMENTION></p></t>');
+        $source = $this->app()->getContainer()->make(UserMentionSource::class);
 
-        $this->fire(new Posted($post));
+        $targets = $source->extract('<t><p><USERMENTION displayname="ghost" id="9999">@ghost</USERMENTION></p></t>');
 
-        $this->assertSame(0, PostLink::query()->where('source', PostLink::SOURCE_USER_MENTION)->count());
+        $this->assertSame([], $targets);
     }
 
     #[Test]
