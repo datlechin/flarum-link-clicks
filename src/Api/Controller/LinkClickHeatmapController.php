@@ -27,6 +27,8 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class LinkClickHeatmapController implements RequestHandlerInterface
 {
+    use ScopesBySource;
+
     public function __construct(
         protected ConnectionInterface $db,
     ) {
@@ -41,9 +43,13 @@ class LinkClickHeatmapController implements RequestHandlerInterface
         $cells = array_fill(0, 7, array_fill(0, 24, 0));
         $max = 0;
 
-        $this->db->table('link_click_events')
-            ->where('counted', true)
-            ->where('clicked_at', '>=', $since)
+        $this->scopeToSource(
+            $this->db->table('link_click_events')
+                ->where('counted', true)
+                ->where('clicked_at', '>=', $since),
+            $request,
+            'link_click_events',
+        )
             ->orderBy('clicked_at')
             ->select('clicked_at')
             ->chunk(2000, function ($chunk) use (&$cells, &$max) {

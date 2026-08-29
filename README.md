@@ -2,82 +2,110 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md) [![Latest Stable Version](https://img.shields.io/packagist/v/datlechin/flarum-link-clicks.svg)](https://packagist.org/packages/datlechin/flarum-link-clicks) [![Total Downloads](https://img.shields.io/packagist/dt/datlechin/flarum-link-clicks.svg)](https://packagist.org/packages/datlechin/flarum-link-clicks)
 
-A Flarum extension that puts a click count next to every link in a post.
+Shows how many people opened each link in a post.
 
 ![Badge in a post](screenshots/badge.png)
 
-## What it does
+A small badge appears next to a link once people start clicking it. It inherits your theme and dark mode, and the number is visible to everyone reading the post.
 
-Every `http(s)` link grows a small badge once people start clicking. The badge inherits your theme and dark mode automatically. The number tells everyone reading the post how many people opened that link.
-
-On top of the badge:
-
-- **Popular links** sidebar widget on each discussion.
-- **Most clicked links** widget on user profiles.
-- **Live updates** when `flarum/realtime` is installed. Badges tick up without a page reload.
-- **Admin analytics** with filters, CSV export, and a per-link drill-down that shows who clicked. Daily clicks chart, top domains rollup, weekday-by-hour heatmap, and a mobile / tablet / desktop split.
-- **Per-discussion click stats**. Mods get a "Click stats" item in the discussion controls dropdown, scoped to that thread.
-- **User click trail**. Drill from a clicker into every link that user has opened.
-- **Webhook** to forward click events. Exponential backoff retries, dedup header, and a "Send test ping" button.
-- **Console tooling**: backfill, counter reconcile, daily rollup, anomaly detection, weekly digest.
-- **Domain blocklist** and an optional **confirm-before-leaving** dialog for outbound clicks.
-- **Privacy controls**: forum-wide skip-guests, per-user opt-out, author per-post toggle, tag-level opt-out (with `flarum/tags`), and full GDPR export / anonymize / delete (with `flarum/gdpr`).
-
-| Popular links sidebar | Most clicked links on profile |
-|---|---|
-| ![Popular links widget](screenshots/popular-widget.png) | ![Most clicked links on user profile](screenshots/user-widget.png) |
-
-## Installation
+Hashtags and mentions are links too, so they are counted the same way. `#support`, `@alice` and post mentions each get their own count.
 
 ```sh
 composer require datlechin/flarum-link-clicks
-```
-
-Enable from Admin → Extensions.
-
-## Updating
-
-```sh
-composer update datlechin/flarum-link-clicks
 php flarum migrate
-php flarum cache:clear
 ```
 
-## Configuration
+Then enable it in **Admin → Extensions**.
 
-The extension page (Admin → Extensions → Link Clicks) has three tabs.
+## What you get
+
+**In the forum**
+
+- Click badges on links, `#hashtags` and `@mentions`.
+- Trending hashtags on the index, ranked by how sharply a hashtag's click rate has risen — not by lifetime total, so the list actually changes.
+- Popular links in the discussion sidebar, and most-clicked links on user profiles.
+- Live counts when `flarum/realtime` is installed, without a reload.
+
+**For moderators and admins**
+
+- Analytics with filters and CSV export, plus a daily chart, top domains, a weekday-by-hour heatmap, and a device breakdown.
+- Per-link drill-down showing who clicked, and per-user click trails.
+- Per-discussion stats from the discussion controls menu.
+
+| Popular links | Most clicked on a profile | Who clicked |
+|---|---|---|
+| ![Popular links widget](screenshots/popular-widget.png) | ![Most clicked links on user profile](screenshots/user-widget.png) | ![Drill-down](screenshots/drilldown-modal.png) |
+
+## Settings
+
+**Admin → Extensions → Link Clicks** has three tabs: Settings, Analytics and Webhook.
 
 ![Admin analytics tab](screenshots/admin-analytics.png)
 
-### Settings
+### Counting
 
-| Key | Default | What it does |
+| Setting | Default | |
 |---|---|---|
 | `enabled` | `true` | Master switch. Off means no badges and no recording. |
-| `track_internal` | `false` | Track links pointing back at the forum. Off keeps the focus on outbound traffic. Attachments are tracked regardless. |
 | `min_display_count` | `1` | Hide the badge below this number. |
-| `honor_dnt` | `true` | Skip recording when the request carries `DNT: 1`. The redirect still works. |
-| `skip_guests` | `false` | Drop all guest clicks. Logged-in users only. |
-| `dedup_window_hours` | `24` | A given user (or guest IP) only counts once per link in this window. |
-| `event_retention_days` | `90` | Daily job removes click events older than this. Set to `0` to keep everything. |
-| `bot_user_agents` |  | Extra User-Agent fragments treated as bots. One per line. |
-| `tracking_params_strip` |  | Extra query params to strip before counting. One per line. Trailing `*` matches a prefix. Defaults already cover `utm_*`, `fbclid`, `gclid`, `mc_*`, `igshid`, `_ga` and others. |
-| `attachment_path_prefixes` |  | Extra URL path prefixes treated as attachments. One per line. `/assets/files/` is built in. |
-| `domain_blocklist` |  | Hosts to skip entirely. One per line. `*.example.com` matches every subdomain. Posts referencing these hosts get no badge and clicks aren't recorded. |
-| `confirm_external_clicks` | `false` | Show a browser confirm dialog when a reader clicks an external tracked link. |
-| `digest_enabled` | `false` | Mail every administrator a plain-text summary of the past week's clicks every Monday morning. |
-| `anomaly_threshold_ratio` | `10` | Daily anomaly check logs a warning when the past 24 hours' click volume exceeds the prior six-day average by this ratio. |
-| `anomaly_min_clicks` | `20` | Floor below which the anomaly check is skipped, so quiet forums don't fire on every blip. |
+| `dedup_window_hours` | `24` | One person counts once per link within this window. |
+| `track_internal` | `false` | Also count links back to the forum. Attachments are counted either way. |
+| `track_tag_mentions` | `true` | Count `#hashtag` clicks. Needs `flarum/mentions` and `flarum/tags`. |
+| `track_user_mentions` | `true` | Count `@username` clicks. Needs `flarum/mentions`. |
+| `track_post_mentions` | `true` | Count post-mention clicks. Needs `flarum/mentions`. |
 
-### Webhook
+### Privacy
 
-Each recorded click is sent to your URL as a JSON POST. Toggle it on, paste a URL, optionally set a shared secret to sign the request body.
+| Setting | Default | |
+|---|---|---|
+| `honor_dnt` | `true` | Skip recording when the request sends `DNT: 1`. The link still works. |
+| `skip_guests` | `false` | Count logged-in users only. |
+| `event_retention_days` | `90` | Delete click events older than this. `0` keeps everything. |
+| `bot_user_agents` | | Extra User-Agent fragments to treat as bots, one per line. |
+
+### Links
+
+| Setting | Default | |
+|---|---|---|
+| `open_in_new_window` | `false` | Open tracked links in a new tab. |
+| `confirm_external_clicks` | `false` | Ask before sending a reader off the forum. |
+| `domain_blocklist` | | Hosts to ignore entirely, one per line. `*.example.com` covers subdomains. |
+| `tracking_params_strip` | | Extra query params to strip so variants of one URL merge. `utm_*`, `fbclid`, `gclid`, `mc_*`, `igshid` and `_ga` are already covered. Trailing `*` matches a prefix. |
+| `attachment_path_prefixes` | | Extra paths to treat as attachments. `/assets/files/` is built in. |
+
+### Reports
+
+| Setting | Default | |
+|---|---|---|
+| `trending_enabled` | `true` | Show trending hashtags on the index. |
+| `trending_min_clicks` | `5` | Ignore hashtags below this many clicks in the last counted day. |
+| `digest_enabled` | `false` | Email admins a weekly summary on Monday morning. |
+| `anomaly_threshold_ratio` | `10` | Warn when a day's clicks exceed the prior six-day average by this much. |
+| `anomaly_min_clicks` | `20` | Skip the check below this volume, so quiet forums stay quiet. |
+
+### Permission
+
+**View link click analytics** — admins have it by default. Grant it to other groups in **Admin → Permissions**.
+
+## Webhook
+
+Every recorded click is POSTed to your URL as JSON. Set a secret to sign the body.
 
 ```json
 {
   "event": "click_recorded",
   "counted": true,
-  "post_link": { "id": 123, "url": "https://example.com/page", "is_internal": false, "is_attachment": false, "post_id": 456, "discussion_id": 789, "clicks_count": 42 },
+  "post_link": {
+    "id": 123,
+    "source": "url",
+    "url": "https://example.com/page",
+    "label": null,
+    "is_internal": false,
+    "is_attachment": false,
+    "post_id": 456,
+    "discussion_id": 789,
+    "clicks_count": 42
+  },
   "actor": { "user_id": 10, "username": "alice" },
   "ip_address": "192.168.1.1",
   "user_agent": "Mozilla/5.0 ...",
@@ -85,42 +113,49 @@ Each recorded click is sent to your URL as a JSON POST. Toggle it on, paste a UR
 }
 ```
 
-`actor` is `null` for guest clicks. `counted` is `false` when the click hit a dedup or self-click rule (the badge didn't tick up). When a secret is set, the signature is sent in `X-LinkClicks-Signature: sha256=<hex>`, computed over the raw body. Delivery is async and retried a few times on failure.
+- `source` is `url`, `tag_mention`, `user_mention` or `post_mention`. `label` holds a display name (`#support`, `@alice`) for mentions and is `null` for plain links.
+- `counted` is `false` when the click hit a dedup or self-click rule, so the badge didn't move.
+- `actor` is `null` for guests.
+- With a secret set, the signature arrives in `X-LinkClicks-Signature: sha256=<hex>` over the raw body.
 
-![Drill-down: who clicked this link](screenshots/drilldown-modal.png)
-
-### Permissions
-
-Adds one permission: **View link click analytics**. Admins have it by default. Grant to other groups from Admin → Permissions.
+Delivery is queued and retried with backoff. The Webhook tab has a **Send test ping** button.
 
 ## Console commands
 
-| Command | What it does |
+Everything below is scheduled already; run them by hand only when you want to.
+
+| Command | |
 |---|---|
-| `link-clicks:backfill` | Registers links from posts that existed before the extension was enabled. Safe to re-run. `--chunk=N`, `--from-id=X`. |
-| `link-clicks:reconcile` | Walks every tracked link and writes back any drift between the stored counter and the actual recorded events. `--dry-run` reports without writing. Daily-scheduled. |
-| `link-clicks:build-daily-rollup` | Aggregates raw events into the daily rollup table that powers the time-series chart on large forums. First run backfills from the oldest event; subsequent runs resume. `--rebuild` wipes and recomputes. Daily-scheduled. |
-| `link-clicks:detect-anomalies` | Logs a warning when the past day's click volume jumps versus the prior six-day average. Daily-scheduled. |
-| `link-clicks:purge-events` | Removes click events older than the retention window. Daily-scheduled. |
-| `link-clicks:send-digest` | Mails the weekly summary to administrators. Weekly-scheduled (Monday 06:00). |
+| `link-clicks:backfill` | Register links in posts written before the extension was enabled. Safe to re-run. `--chunk=N`, `--from-id=X`. |
+| `link-clicks:reconcile` | Recount from the recorded events and correct any drift. `--dry-run` reports without writing. |
+| `link-clicks:build-daily-rollup` | Aggregate events into the daily table behind the chart. `--rebuild` recomputes from scratch. |
+| `link-clicks:purge-events` | Delete events past the retention window. |
+| `link-clicks:detect-anomalies` | Log a warning when a day's clicks spike. |
+| `link-clicks:send-digest` | Email the weekly summary now. |
 
 ## Privacy and GDPR
 
-The extension stores the IP address and User-Agent of each recorded click. Under GDPR these are personal data. As the forum operator you're responsible for:
+Each recorded click stores an IP address and User-Agent, which are personal data under GDPR. As the forum operator you need to disclose the collection in your privacy notice, choose a lawful basis (legitimate interest is the usual fit), and set a retention window — `event_retention_days` and the daily purge handle the last part.
 
-- Disclosing the collection in your privacy notice.
-- Choosing a lawful basis (legitimate interest is the usual fit for engagement analytics).
-- Setting a retention window (the daily purge handles this).
-- Honouring access and erasure requests. Install `flarum/gdpr` to expose them automatically.
+Install `flarum/gdpr` and access, export and erasure requests are handled for you.
 
-Defaults that lean toward privacy: bots are dropped, `DNT: 1` is honoured, authors can't inflate their own counts, the redirect URL never contains the destination.
+The defaults lean private: bots are dropped, `DNT: 1` is honoured, authors can't inflate their own counts, and the tracking URL never carries the destination.
+
+## Adding your own trackable
+
+Anything clickable in a post can be counted. Implement `TrackableSource` — it says which formatter tag to read, how to find targets in a post, and where a click should land — then register it:
+
+```php
+(new Datlechin\LinkClicks\Extend\TrackableSources())
+    ->add(MyPollVoteSource::class),
+```
+
+It flows through extraction, rendering, click recording, analytics, GDPR and the console commands with no further wiring.
 
 ## Sponsors
 
-If this extension is useful to you, [sponsoring on GitHub](https://github.com/sponsors/datlechin) helps me keep building and maintaining open source for Flarum.
+If this is useful to you, [sponsoring on GitHub](https://github.com/sponsors/datlechin) helps me keep maintaining it.
 
 ## Links
 
-- [Packagist](https://packagist.org/packages/datlechin/flarum-link-clicks)
-- [GitHub](https://github.com/datlechin/flarum-link-clicks)
-- [Discuss](https://discuss.flarum.org/d/39223)
+[Packagist](https://packagist.org/packages/datlechin/flarum-link-clicks) · [GitHub](https://github.com/datlechin/flarum-link-clicks) · [Discuss](https://discuss.flarum.org/d/39223)

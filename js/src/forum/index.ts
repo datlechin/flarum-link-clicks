@@ -1,5 +1,6 @@
 import app from 'flarum/forum/app';
 import addPopularLinksWidget from './addPopularLinksWidget';
+import addTrendingHashtagsWidget from './addTrendingHashtagsWidget';
 import addUserPopularLinksWidget from './addUserPopularLinksWidget';
 import confirmExternalClicks from './confirmExternalClicks';
 import extendDiscussionControls from './extendDiscussionControls';
@@ -9,6 +10,7 @@ import extendSettingsPage from './extendSettingsPage';
 
 app.initializers.add('datlechin-link-clicks', () => {
   addPopularLinksWidget();
+  addTrendingHashtagsWidget();
   addUserPopularLinksWidget();
   extendSettingsPage();
   extendPostControls();
